@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import Notice from "./Notice";
+import Leave from "./Leave";
 
 const Dashboard = () => {
   const { tab } = useParams();
@@ -313,17 +315,11 @@ const Dashboard = () => {
         )}
 
         {activeTab === "notice" && (
-          <div>
-            <h2 className="text-3xl font-bold mb-4">Notice Section</h2>
-            <p>View notices here.</p>
-          </div>
+          <Notice />
         )}
 
         {activeTab === "leave" && (
-          <div>
-            <h2 className="text-3xl font-bold mb-4">Leave Section</h2>
-            <p>Manage leave requests here.</p>
-          </div>
+          <Leave />
         )}
       </div>
     </div>

@@ -11,10 +11,14 @@ import {
 export const adminRegister = (data) => postPublic(ENDPOINTS.ADMIN_REGISTER, data);
 export const loginUser = (data) => postPublic(ENDPOINTS.ADMIN_LOGIN, data);
 export const addTeacher = (data) => postPublic(ENDPOINTS.ADD_TEACHER, data);
+export const getClasses = () => getPublic(ENDPOINTS.GET_CLASS);
+export const addClass = (data) => postPublic(ENDPOINTS.ADD_CLASS, data);
 
 
 export const apiService = {
-adminRegister,
-loginUser,
-addTeacher
+  adminRegister,
+  loginUser,
+  addTeacher,
+  getClasses,
+  addClass
 };

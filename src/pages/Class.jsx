@@ -1,11 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { apiService } from "../config/apiService";
 
 const Class = () => {
   const [classes, setClasses] = useState([]);
   const [showClassForm, setShowClassForm] = useState(false);
   const [classForm, setClassForm] = useState({
-    className: "",
+    name: "",
   });
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const fetchClasses = async () => {
+    try {
+      const data = await apiService.getClasses();
+      setClasses(data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
 
   const handleClassChange = (e) => {
     setClassForm({
@@ -14,19 +28,20 @@ const Class = () => {
     });
   };
 
-  const handleClassSubmit = (e) => {
+  const handleClassSubmit = async (e) => {
     e.preventDefault();
 
-    setClasses([
-      ...classes,
-      classForm,
-    ]);
+    try {
+      await apiService.addClass(classForm);
+      await fetchClasses();
 
-    setClassForm({
-      className: "",
-    });
-
-    setShowClassForm(false);
+      setClassForm({
+        name: "",
+      });
+      setShowClassForm(false);
+    } catch (error) {
+      console.error("Error adding class:", error);
+    }
   };
 
   return (
@@ -57,7 +72,7 @@ const Class = () => {
               {classes.length > 0 ? (
                 classes.map((cls, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">{cls.className}</td>
+                    <td className="px-6 py-4">{cls.name}</td>
                   </tr>
                 ))
               ) : (
@@ -85,9 +100,9 @@ const Class = () => {
             <form onSubmit={handleClassSubmit} className="flex flex-col gap-5">
               <input
                 type="text"
-                name="className"
+                name="name"
                 placeholder="Class Name"
-                value={classForm.className}
+                value={classForm.name}
                 onChange={handleClassChange}
                 className="border p-3 rounded-lg"
                 required

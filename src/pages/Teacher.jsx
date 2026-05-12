@@ -31,7 +31,7 @@ const Teacher = () => {
         email: teacherForm.email,
         schoolName: teacherForm.schoolName,
         password: teacherForm.password,
-        subject: teacherForm.subjects, // map subjects to subject as per API
+        subject: teacherForm.subjects, 
       };
 
       const response = await addTeacher(payload);

@@ -8,24 +8,19 @@ import Class from "./Class";
 const Dashboard = () => {
   const { tab } = useParams();
   const activeTab = tab || "teacher";
-
   return (
     <div className="flex min-h-screen bg-gray-50 text-gray-900">
       <Sidebar />
-
       <div className="flex-1 p-10">
         {activeTab === "teacher" && (
           <Teacher />
         )}
-
         {activeTab === "class" && (
           <Class />
         )}
-
         {activeTab === "notice" && (
           <Notice />
         )}
-
         {activeTab === "leave" && (
           <Leave />
         )}
@@ -33,5 +28,4 @@ const Dashboard = () => {
     </div>
   );
 };
-
 export default Dashboard;

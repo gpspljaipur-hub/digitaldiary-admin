@@ -49,6 +49,9 @@ const Class = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  S.No
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Class Name
                 </th>
               </tr>
@@ -57,12 +60,13 @@ const Class = () => {
               {classes.length > 0 ? (
                 classes.map((cls, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">{cls.className}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{cls.className}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td className="text-center py-10 text-gray-500">
+                  <td colSpan="2" className="text-center py-10 text-gray-500">
                     No Classes Found
                   </td>
                 </tr>

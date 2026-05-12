@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { adminRegister } from '../config/apiService';
 
 const Registration = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -30,11 +32,36 @@ const Registration = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registration Data:", formData);
-    alert("Registration Successful!");
-    navigate('/dashboard/teacher');
+    setLoading(true);
+    
+    try {
+      const payload = {
+        mobile: formData.mobileNumber,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        password: formData.password,
+        schoolName: formData.schoolName,
+        dob: formData.dob,
+        employeeId: formData.employeeId,
+        email: formData.email
+      };
+
+      const response = await adminRegister(payload);
+      
+      if (response?.success || response?.message === 'Admin created successfully' || response?._id) {
+        alert("Registration Successful!");
+        navigate('/');
+      } else {
+        alert(response?.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(error.response?.data?.message || 'Failed to register. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,6 +136,7 @@ const Registration = () => {
               <input
                 type="tel"
                 id="mobileNumber"
+                maxLength={10}
                 name="mobileNumber"
                 className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-[15px] text-slate-900 transition-all duration-200 focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-600/10"
                 placeholder="Enter mobile number"
@@ -159,8 +187,8 @@ const Registration = () => {
             </div>
           </div>
 
-          <button type="submit" className="w-full py-3.5 bg-blue-600 text-white rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] mt-5">
-            Complete Registration
+          <button type="submit" disabled={loading} className="w-full py-3.5 bg-blue-600 text-white rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] mt-5 disabled:opacity-70 disabled:cursor-not-allowed">
+            {loading ? 'Registering...' : 'Complete Registration'}
           </button>
         </form>
       </div>

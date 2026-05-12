@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { addTeacher } from "../config/apiService";
 
 const Teacher = () => {
   const [teachers, setTeachers] = useState([]);
   const [showTeacherForm, setShowTeacherForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [teacherForm, setTeacherForm] = useState({
     name: "",
@@ -19,23 +21,46 @@ const Teacher = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    setTeachers([
-      ...teachers,
-      teacherForm,
-    ]);
+    try {
+      const payload = {
+        name: teacherForm.name,
+        email: teacherForm.email,
+        schoolName: teacherForm.schoolName,
+        password: teacherForm.password,
+        subject: teacherForm.subjects, // map subjects to subject as per API
+      };
 
-    setTeacherForm({
-      name: "",
-      email: "",
-      schoolName: "",
-      password: "",
-      subjects: "",
-    });
+      const response = await addTeacher(payload);
 
-    setShowTeacherForm(false);
+      if (response?.success || response?.message || response?._id || response) {
+        alert("Teacher added successfully!");
+        setTeachers([
+          ...teachers,
+          { ...teacherForm },
+        ]);
+
+        setTeacherForm({
+          name: "",
+          email: "",
+          schoolName: "",
+          password: "",
+          subjects: "",
+        });
+
+        setShowTeacherForm(false);
+      } else {
+        alert(response?.message || 'Failed to add teacher');
+      }
+    } catch (error) {
+      console.error("Add teacher error:", error);
+      alert(error.response?.data?.message || 'Failed to add teacher. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -173,9 +198,10 @@ const Teacher = () => {
 
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg col-span-2"
+                disabled={loading}
+                className="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg col-span-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Submit
+                {loading ? 'Submitting...' : 'Submit'}
               </button>
             </form>
           </div>

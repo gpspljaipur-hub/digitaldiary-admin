@@ -27,7 +27,7 @@ const Dashboard = () => {
         {activeTab === "notice" && (
           <Notice />
         )}
-        {activeTab === "complain" && (
+        {activeTab === "complaint" && (
           <Complain />
         )}
         {activeTab === "leave" && (

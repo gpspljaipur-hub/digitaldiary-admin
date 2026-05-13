@@ -4,32 +4,31 @@ const Complain = () => {
   const [complains, setComplains] = useState([]);
   const [showComplainForm, setShowComplainForm] = useState(false);
   const [complainForm, setComplainForm] = useState({
-    categoryId: "",
+    category: "",
     description: "",
   });
 
-  // Demo categories for the dropdown
   const availableCategories = [
-    { id: "CAT-001", name: "Infrastructure" },
-    { id: "CAT-002", name: "Academics" },
-    { id: "CAT-003", name: "Staff Behavior" },
-    { id: "CAT-004", name: "Other" }
+    "Infrastructure",
+    "Academics",
+    "Staff Behavior",
+    "Other"
   ];
 
   const handleComplainChange = (e) => {
-    setComplainForm({
-      ...complainForm,
+    setComplainForm(prev => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleComplainSubmit = (e) => {
     e.preventDefault();
 
-    setComplains([...complains, complainForm]);
+    setComplains(prev => [...prev, complainForm]);
 
     setComplainForm({
-      categoryId: "",
+      category: "",
       description: "",
     });
 
@@ -44,7 +43,7 @@ const Complain = () => {
         </h2>
         <button
           onClick={() => setShowComplainForm(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-medium"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-medium shadow-sm transition-all active:scale-95"
         >
           Add Complain
         </button>
@@ -59,7 +58,7 @@ const Complain = () => {
                   S.No
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Category ID
+                  Category
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Description
@@ -74,7 +73,7 @@ const Complain = () => {
                       {index + 1}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {complain.categoryId}
+                      {complain.category}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {complain.description}
@@ -94,29 +93,29 @@ const Complain = () => {
       </div>
 
       {showComplainForm && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white w-full max-w-lg rounded-xl p-8 relative shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-lg rounded-xl p-8 relative shadow-2xl animate-[slideUp_0.3s_ease-out]">
             <button
               onClick={() => setShowComplainForm(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl leading-none"
             >
               &times;
             </button>
             <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Complain</h2>
-            <form onSubmit={handleComplainSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleComplainSubmit} className="flex flex-col gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category ID</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <select
-                  name="categoryId"
-                  value={complainForm.categoryId}
+                  name="category"
+                  value={complainForm.category}
                   onChange={handleComplainChange}
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   required
                 >
                   <option value="" disabled>Select a Category</option>
                   {availableCategories.map((cat, index) => (
-                    <option key={index} value={cat.id}>
-                      {cat.id} - {cat.name}
+                    <option key={index} value={cat}>
+                      {cat}
                     </option>
                   ))}
                 </select>
@@ -137,7 +136,7 @@ const Complain = () => {
 
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg mt-2 transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg mt-2 transition-colors active:scale-[0.98]"
               >
                 Submit Complain
               </button>

@@ -4,6 +4,8 @@ import Notice from "./Notice";
 import Leave from "./Leave";
 import Teacher from "./Teacher";
 import Class from "./Class";
+import Subject from "./Subject";
+import Complain from "./Complain";
 
 const Dashboard = () => {
   const { tab } = useParams();
@@ -18,8 +20,15 @@ const Dashboard = () => {
         {activeTab === "class" && (
           <Class />
         )}
+
+        {activeTab === "subject" && (
+          <Subject />
+        )}
         {activeTab === "notice" && (
           <Notice />
+        )}
+        {activeTab === "complain" && (
+          <Complain />
         )}
         {activeTab === "leave" && (
           <Leave />

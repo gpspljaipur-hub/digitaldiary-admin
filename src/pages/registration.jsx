@@ -2,6 +2,15 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { adminRegister } from '../config/apiService';
 
+const getYesterdayDate = () => {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const Registration = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -151,6 +160,7 @@ const Registration = () => {
                 type="date"
                 id="dob"
                 name="dob"
+                max={getYesterdayDate()}
                 className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-[15px] text-slate-900 transition-all duration-200 focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-600/10"
                 value={formData.dob}
                 onChange={handleChange}

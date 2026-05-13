@@ -7,5 +7,7 @@ export const API_CONFIG = {
 export const ENDPOINTS = {
    ADMIN_REGISTER: "/admin/create",
    ADMIN_LOGIN: "/admin/login",
-   ADD_TEACHER: "/teachers/add"
+   ADD_TEACHER: "/teachers/add",
+   ADD_CLASS: "/classes/add",
+   GET_CLASS: "/classes/all"
 };

@@ -8,7 +8,9 @@ const Sidebar = () => {
   const menuItems = [
     { id: "teacher", label: "Teacher" },
     { id: "class", label: "Class"},
+    { id: "subject", label: "Subject"},
     { id: "notice", label: "Notice" },
+    { id: "complaint", label: "Complaint" },
     { id: "leave", label: "Leave" },
   ];
 

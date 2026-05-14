@@ -1,26 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Notice = () => {
-  const [notices, setNotices] = useState([
-    {
-      title: "Exam Schedule Announced",
-      description: "The final examination schedule for the academic year 2026 has been published. All class teachers are requested to download the timetable from the portal and share it with their respective students by this Friday.",
-      classId: "All Classes",
-      status: "Active"
-    },
-    {
-      title: "Sports Day Meeting",
-      description: "A mandatory meeting for all PE teachers and house captains will be held tomorrow in the main auditorium to discuss the preparations for the upcoming Annual Sports Day.",
-      classId: "10th A",
-      status: "Active"
-    },
-    {
-      title: "Summer Vacation Notice",
-      description: "The school will remain closed for summer vacations starting from 1st June. The campus will reopen on 1st July. Teachers must submit all final grades before the start of the break.",
-      classId: "All Classes",
-      status: "Inactive"
+  const [notices, setNotices] = useState(() => {
+    const saved = localStorage.getItem("notices_data");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse notices from localStorage");
+      }
     }
-  ]);
+    return [
+      {
+        title: "Exam Schedule Announced",
+        description: "The final examination schedule for the academic year 2026 has been published. All class teachers are requested to download the timetable from the portal and share it with their respective students by this Friday.",
+        classId: "All Classes",
+        status: "Active"
+      },
+      {
+        title: "Sports Day Meeting",
+        description: "A mandatory meeting for all PE teachers and house captains will be held tomorrow in the main auditorium to discuss the preparations for the upcoming Annual Sports Day.",
+        classId: "10th A",
+        status: "Active"
+      },
+      {
+        title: "Summer Vacation Notice",
+        description: "The school will remain closed for summer vacations starting from 1st June. The campus will reopen on 1st July. Teachers must submit all final grades before the start of the break.",
+        classId: "All Classes",
+        status: "Inactive"
+      }
+    ];
+  });
 
   const availableClasses = ["All Classes", "10th A", "9th B", "8th A", "11th Science", "12th Commerce"];
 
@@ -32,6 +42,10 @@ const Notice = () => {
     status: "Active"
   });
 
+  useEffect(() => {
+    localStorage.setItem("notices_data", JSON.stringify(notices));
+  }, [notices]);
+
   const handleChange = (e) => {
     setNoticeForm({
       ...noticeForm,
@@ -42,6 +56,18 @@ const Notice = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    const isDuplicate = notices.some(
+      (notice) => 
+        notice.title.trim().toLowerCase() === noticeForm.title.trim().toLowerCase() && 
+        notice.classId === noticeForm.classId &&
+        notice.description.trim().toLowerCase() === noticeForm.description.trim().toLowerCase()
+    );
+
+    if (isDuplicate) {
+      alert("This notice has already been published for this class.");
+      return;
+    }
+
     setNotices(prevNotices => [noticeForm, ...prevNotices]);
     setNoticeForm({ title: "", description: "", classId: "", status: "Active" });
     setShowNoticeForm(false);

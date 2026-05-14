@@ -12,6 +12,7 @@ const Sidebar = () => {
     { id: "notice", label: "Notice" },
     { id: "complaint", label: "Complaint" },
     { id: "leave", label: "Leave" },
+    { id: "homework", label: "Homework" },
   ];
 
   return (

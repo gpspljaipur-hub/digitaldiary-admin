@@ -13,7 +13,7 @@ const Complain = () => {
     return [
       {
         studentName: "Rahul Sharma",
-        className: "10th A",
+        className: "10th A",  
         category: "Infrastructure",
         description: "Fan in classroom 10th A is making a lot of noise and needs repairing.",
         status: "Pending"

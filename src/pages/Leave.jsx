@@ -1,24 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Leave = () => {
-  const [leaves, setLeaves] = useState([
-    {
-      id: 1,
-      teacherName: "Mr. Sharma",
-      className: "10th A",
-      studentName: "Rahul Kumar",
-      description: "Fever and cold since last night",
-      status: "Pending"
-    },
-    {
-      id: 2,
-      teacherName: "Mrs. Gupta",
-      className: "8th B",
-      studentName: "Priya Singh",
-      description: "Attending a family function",
-      status: "Approved"
+  const [leaves, setLeaves] = useState(() => {
+    const saved = localStorage.getItem("leaves_data");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse leaves from localStorage");
+      }
     }
-  ]);
+    return [
+      {
+        id: 1,
+        studentName: "Rahul Kumar",
+        startDate: "2026-05-15",
+        endDate: "2026-05-16",
+        description: "Fever and cold since last night",
+        status: "Pending"
+      },
+      {
+        id: 2,
+        studentName: "Priya Singh",
+        startDate: "2026-05-20",
+        endDate: "2026-05-22",
+        description: "Attending a family function out of station",
+        status: "Approved"
+      }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("leaves_data", JSON.stringify(leaves));
+  }, [leaves]);
 
   const toggleStatus = (id) => {
     setLeaves(prevLeaves => 
@@ -48,16 +62,16 @@ const Leave = () => {
                   S.No
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Teacher Name
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Class Name
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Student Name
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Leave Description
+                  Start Date
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  End Date
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Description
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Action
@@ -72,13 +86,13 @@ const Leave = () => {
                       {index + 1}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {leave.teacherName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {leave.className}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {leave.studentName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {leave.startDate}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {leave.endDate}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" title={leave.description}>
                       {leave.description}

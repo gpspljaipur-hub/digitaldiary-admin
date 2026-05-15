@@ -7,6 +7,8 @@ import Class from "./Class";
 import Subject from "./Subject";
 import Complain from "./Complain";
 import Homework from "./Homework";
+import Marks from "./Marks";
+import Attendance from "./Attendance";
 
 const Dashboard = () => {
   const { tab } = useParams();
@@ -36,6 +38,12 @@ const Dashboard = () => {
         )}
         {activeTab === "homework" && (
           <Homework />
+        )}
+        {activeTab === "marks" && (
+          <Marks />
+        )}
+        {activeTab === "attendance" && (
+          <Attendance />
         )}
       </div>
     </div>

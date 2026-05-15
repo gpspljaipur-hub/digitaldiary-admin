@@ -1,15 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { apiService } from "../config/apiService";
 
 const Subject = () => {
   const [subjects, setSubjects] = useState([]);
   const [showSubjectForm, setShowSubjectForm] = useState(false);
   const [subjectForm, setSubjectForm] = useState({
-    subjectName: "",
-    className: "",
+    name: "",
+    classId: "",
   });
 
-  
-  const availableClasses = ["10th A", "9th B", "8th A", "11th Science", "12th Commerce"];
+  const [availableClasses, setAvailableClasses] = useState([]);
+  const [selectedClassId, setSelectedClassId] = useState("");
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const fetchSubjects = async (classId) => {
+    setSelectedClassId(classId);
+    if (!classId) {
+      setSubjects([]);
+      return;
+    }
+    try {
+      const data = await apiService.getSubjects({ classId });
+      setSubjects(Array.isArray(data) ? data : (data.data || []));
+    } catch (error) {
+      console.error("Error fetching subjects:", error);
+    }
+  };
+
+  const fetchClasses = async () => {
+    try {
+      const data = await apiService.getClasses();
+      setAvailableClasses(data);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
 
   const handleSubjectChange = (e) => {
     setSubjectForm({
@@ -18,31 +46,50 @@ const Subject = () => {
     });
   };
 
-  const handleSubjectSubmit = (e) => {
+  const handleSubjectSubmit = async (e) => {
     e.preventDefault();
 
-    setSubjects(prev => [...prev, subjectForm]);
-
-    setSubjectForm({
-      subjectName: "",
-      className: "",
-    });
-
-    setShowSubjectForm(false);
+    try {
+      await apiService.addSubject(subjectForm);
+      if (selectedClassId === subjectForm.classId || !selectedClassId) {
+        fetchSubjects(subjectForm.classId);
+      }
+      setSubjectForm({
+        name: "",
+        classId: "",
+      });
+      setShowSubjectForm(false);
+    } catch (error) {
+      console.error("Error adding subject:", error);
+    }
   };
 
   return (
     <div className="relative">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-3xl font-bold text-gray-800">
           Subjects List
         </h2>
-        <button
-          onClick={() => setShowSubjectForm(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-medium"
-        >
-          Add Subject
-        </button>
+        <div className="flex gap-4 w-full sm:w-auto">
+          <select 
+            value={selectedClassId}
+            onChange={(e) => fetchSubjects(e.target.value)}
+            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 min-w-[200px]"
+          >
+            <option value="">Select a Class to View</option>
+            {availableClasses.map((cls, index) => (
+              <option key={index} value={cls._id || cls.id}>
+                {cls.className || cls.name}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => setShowSubjectForm(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-medium whitespace-nowrap"
+          >
+            Add Subject
+          </button>
+        </div>
       </div>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
@@ -69,10 +116,10 @@ const Subject = () => {
                       {index + 1}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {sub.subjectName}
+                      {sub.name || sub.subjectName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {sub.className}
+                      {sub.classId?.name || sub.className}
                     </td>
                   </tr>
                 ))
@@ -103,9 +150,9 @@ const Subject = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Subject Name</label>
                 <input
                   type="text"
-                  name="subjectName"
+                  name="name"
                   placeholder="Enter subject name"
-                  value={subjectForm.subjectName}
+                  value={subjectForm.name}
                   onChange={handleSubjectChange}
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   required
@@ -115,16 +162,16 @@ const Subject = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
                 <select
-                  name="className"
-                  value={subjectForm.className}
+                  name="classId"
+                  value={subjectForm.classId}
                   onChange={handleSubjectChange}
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   required
                 >
                   <option value="" disabled>Select a Class</option>
                   {availableClasses.map((cls, index) => (
-                    <option key={index} value={cls}>
-                      {cls}
+                    <option key={index} value={cls._id || cls.id}>
+                      {cls.className || cls.name}
                     </option>
                   ))}
                 </select>

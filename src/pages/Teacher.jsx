@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { addTeacher } from "../config/apiService";
+import { apiService } from "../config/apiService";
 
 const Teacher = () => {
   const [teachers, setTeachers] = useState([]);
@@ -13,6 +14,19 @@ const Teacher = () => {
     password: "",
     subjects: "",
   });
+
+  useEffect(() => {
+      fetchTeacher();
+    }, []);
+  
+    const fetchTeacher = async () => {
+      try {
+        const data = await apiService.getTeacher();
+        setTeachers(data);
+      } catch (error) {
+        console.error("Error fetching teachers:", error);
+      }
+    };
 
   const handleChange = (e) => {
     setTeacherForm({
@@ -114,7 +128,14 @@ const Teacher = () => {
                       {teacher.schoolName}
                     </td>
                     <td className="px-6 py-4">
-                      {teacher.subjects}
+                      {teacher.subjectIds && teacher.subjectIds.length > 0
+                        ? teacher.subjectIds.map((s) => s.name).join(", ")
+                        : "—"}
+                    </td>
+                     <td className="px-6 py-4">
+                      {teacher.classIds && teacher.classIds.length > 0
+                        ? teacher.classIds.map((s) => s.name).join(", ")
+                        : "—"}
                     </td>
                   </tr>
                 ))
@@ -190,10 +211,10 @@ const Teacher = () => {
               <input
                 type="text"
                 name="subjects"
-                placeholder="Subjects"
+                placeholder="ClassName"
                 value={teacherForm.subjects}
                 onChange={handleChange}
-                className="border p-3 rounded-lg col-span-2"
+                className="border p-3 rounded-lg"
               />
 
               <button

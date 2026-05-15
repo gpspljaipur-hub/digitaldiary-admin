@@ -13,10 +13,16 @@ const Sidebar = () => {
     { id: "complaint", label: "Complaint" },
     { id: "leave", label: "Leave" },
     { id: "homework", label: "Homework" },
+    { id: "marks", label: "Marks"},
+    { id: "attendance", label: "Attendance"},
+    { id: "teacher- schedule", label: "Teacher Schedule"},
+    { id: "student", label: "Student"},
+    { id: "exam-type", label: "Exam Type"}
+
   ];
 
   return (
-    <div className="w-64 h-[calc(100vh-4rem)] sticky top-16 flex-shrink-0 bg-white border-r border-gray-200 shadow-sm text-gray-800 flex flex-col">
+    <div className="w-64 h-[calc(100vh-4rem)] sticky top-16 flex-shrink-0 bg-white border-r border-gray-200 shadow-sm text-gray-800 flex flex-col overflow-auto">
 
       <div className="flex flex-col gap-2 p-4 mt-2">
         {menuItems.map((item) => {

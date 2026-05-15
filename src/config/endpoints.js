@@ -9,5 +9,12 @@ export const ENDPOINTS = {
    ADMIN_LOGIN: "/admin/login",
    ADD_TEACHER: "/teachers/add",
    ADD_CLASS: "/classes/add",
-   GET_CLASS: "/classes/all"
+   GET_CLASS: "/classes/all",
+   ADD_SUBJECT: "/subjects/add",
+   GET_SUBJECT: "/subjects/list",
+   ADD_NOTICE: "/notice/add",
+   GET_NOTICE: "/notice/list",
+   GET_TEACHER: "/teachers/all",
+   GET_COMPLAINT: "/complaint/list",
+   ADD_COMPLAINT_CATEGORY: "/complaint-category/add"
 };

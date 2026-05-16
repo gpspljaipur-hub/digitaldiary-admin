@@ -21,6 +21,9 @@ export const getComplaint = () => getPublic(ENDPOINTS.GET_COMPLAINT);
 export const addComplaintCategory = (data) => postPublic(ENDPOINTS.ADD_COMPLAINT_CATEGORY, data);
 export const getNotice = (data) => postPublic(ENDPOINTS.GET_NOTICE, data);
 export const addNotice = (data) => postPublic(ENDPOINTS.ADD_NOTICE, data);
+export const getHomework  = (data) => postPublic(ENDPOINTS.GET_HOMEWORK, data);
+export const getMarks = (data) => postPublic(ENDPOINTS.GET_MARKS, data);
+export const getAttendance = (data) => postPublic(ENDPOINTS.GET_ATTENDANCE, data);
 
 
 
@@ -37,4 +40,7 @@ export const apiService = {
   addComplaintCategory,
   getNotice,
   addNotice,
+  getHomework,
+  getMarks,
+  getAttendance
 };

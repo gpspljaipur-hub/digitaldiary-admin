@@ -9,6 +9,7 @@ import Complain from "./Complain";
 import Homework from "./Homework";
 import Marks from "./Marks";
 import Attendance from "./Attendance";
+import TeacherSchedule from "./TeacherSchedule";
 
 const Dashboard = () => {
   const { tab } = useParams();
@@ -44,6 +45,9 @@ const Dashboard = () => {
         )}
         {activeTab === "attendance" && (
           <Attendance />
+        )}
+         {activeTab === "teacher-schedule" && (
+          <TeacherSchedule />
         )}
       </div>
     </div>

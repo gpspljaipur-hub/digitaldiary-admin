@@ -19,5 +19,6 @@ export const ENDPOINTS = {
    ADD_COMPLAINT_CATEGORY: "/complaint-category/add",
    GET_HOMEWORK: "/homework/list",
    GET_MARKS: "/marks/list",
-   GET_ATTENDANCE : "/attendance/list"
+   GET_ATTENDANCE : "/attendance/list",
+   GET_TEACHER_SCHEDULE: "/teacher-schedule/list"
 };

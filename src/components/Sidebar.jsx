@@ -15,7 +15,7 @@ const Sidebar = () => {
     { id: "homework", label: "Homework" },
     { id: "marks", label: "Marks"},
     { id: "attendance", label: "Attendance"},
-    { id: "teacher- schedule", label: "Teacher Schedule"},
+    { id: "teacher-schedule", label: "Teacher Schedule"},
     { id: "student", label: "Student"},
     { id: "exam-type", label: "Exam Type"}
 

@@ -24,6 +24,7 @@ export const addNotice = (data) => postPublic(ENDPOINTS.ADD_NOTICE, data);
 export const getHomework  = (data) => postPublic(ENDPOINTS.GET_HOMEWORK, data);
 export const getMarks = (data) => postPublic(ENDPOINTS.GET_MARKS, data);
 export const getAttendance = (data) => postPublic(ENDPOINTS.GET_ATTENDANCE, data);
+export const getTeacherSchedule = () => getPublic(ENDPOINTS.GET_TEACHER_SCHEDULE);
 
 
 
@@ -42,5 +43,6 @@ export const apiService = {
   addNotice,
   getHomework,
   getMarks,
-  getAttendance
+  getAttendance,
+  getTeacherSchedule
 };

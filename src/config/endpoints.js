@@ -20,5 +20,7 @@ export const ENDPOINTS = {
    GET_HOMEWORK: "/homework/list",
    GET_MARKS: "/marks/list",
    GET_ATTENDANCE : "/attendance/list",
-   GET_TEACHER_SCHEDULE: "/teacher-schedule/list"
+   GET_TEACHER_SCHEDULE: "/teacher-schedule/list",
+   GET_EXAM_TYPE: "/examType/list",
+   ADD_EXAM_TYPE: "examType/add"
 };

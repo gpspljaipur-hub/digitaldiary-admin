@@ -10,6 +10,7 @@ import Homework from "./Homework";
 import Marks from "./Marks";
 import Attendance from "./Attendance";
 import TeacherSchedule from "./TeacherSchedule";
+import ExamType from "./ExamType";
 
 const Dashboard = () => {
   const { tab } = useParams();
@@ -48,6 +49,9 @@ const Dashboard = () => {
         )}
          {activeTab === "teacher-schedule" && (
           <TeacherSchedule />
+        )}
+        {activeTab === "exam-type" && (
+          <ExamType />
         )}
       </div>
     </div>

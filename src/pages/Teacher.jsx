@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { addTeacher } from "../config/apiService";
 import { apiService } from "../config/apiService";
+import { CloudSnow } from "lucide-react";
 
 const Teacher = () => {
   const [teachers, setTeachers] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [showTeacherForm, setShowTeacherForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -17,8 +19,18 @@ const Teacher = () => {
 
   useEffect(() => {
       fetchTeacher();
+      fetchClasses();
     }, []);
   
+    const fetchClasses  = async () => {
+      try{
+        const data = await apiService.getClasses();
+        setClasses(data);
+      } catch(error){
+        console.log("Error fetching classes", error);
+      }
+    };
+
     const fetchTeacher = async () => {
       try {
         const data = await apiService.getTeacher();
@@ -112,6 +124,12 @@ const Teacher = () => {
                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Classes
                 </th>
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Experience
+                </th>
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Qualification
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -139,6 +157,12 @@ const Teacher = () => {
                       {teacher.classIds && teacher.classIds.length > 0
                         ? teacher.classIds.map((s) => s.name).join(", ")
                         : "—"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {teacher.experience} 
+                    </td>
+                    <td className="px-6 py-4">
+                      {teacher.qualification}
                     </td>
                   </tr>
                 ))
@@ -211,14 +235,6 @@ const Teacher = () => {
                 className="border p-3 rounded-lg"
               />
 
-              <input
-                type="text"
-                name="subjects"
-                placeholder="ClassName"
-                value={teacherForm.subjects}
-                onChange={handleChange}
-                className="border p-3 rounded-lg"
-              />
 
               <button
                 type="submit"

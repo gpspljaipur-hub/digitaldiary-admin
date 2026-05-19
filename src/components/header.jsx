@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
 
 const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-
     navigate('/');
   };
 
@@ -16,12 +16,23 @@ const Header = () => {
         DigitalDiary
       </h1>
 
-      <button
-        onClick={handleLogout}
-        className="bg-red-50 hover:bg-red-100 text-red-600 px-5 py-2 rounded-lg font-medium transition-colors duration-200 shadow-sm"
-      >
-        Logout
-      </button>
+      <div className="flex items-center gap-3">
+
+        <button
+          onClick={() => navigate("/profile")}
+          className="text-gray-600 hover:text-blue-600 transition-colors"
+        >
+          <User size={24} />
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="bg-red-50 hover:bg-red-100 text-red-600 px-5 py-2 rounded-lg font-medium transition-colors duration-200 shadow-sm"
+        >
+          Logout
+        </button>
+
+      </div>
 
     </header>
   );

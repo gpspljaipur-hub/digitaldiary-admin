@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import SchoolName from './pages/SchoolName'
 import Registration from './pages/Registration'
+import Profile from './pages/Profile'
 
 const App = () => {
   return (
@@ -18,6 +19,9 @@ const App = () => {
           <Route path="/schoolname" element={<SchoolName />} />
 
           <Route path="/registration" element={<Registration />} />
+
+           <Route path="/profile" element={<Profile/>}/>
+
 
           <Route
             path="/dashboard"

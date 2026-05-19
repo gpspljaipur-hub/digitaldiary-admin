@@ -27,6 +27,8 @@ export const getAttendance = (data) => postPublic(ENDPOINTS.GET_ATTENDANCE, data
 export const getTeacherSchedule = () => getPublic(ENDPOINTS.GET_TEACHER_SCHEDULE);
 export const getExamType = () => getPublic(ENDPOINTS.GET_EXAM_TYPE);
 export const addExamType = (data) => postPublic(ENDPOINTS.ADD_EXAM_TYPE, data);
+export const getStudents = (data) => postPublic(ENDPOINTS.GET_STUDENT, data);
+export const addStudent = (data) => postPublic(ENDPOINTS.ADD_STUDENT, data);
 
 export const apiService = {
   adminRegister,
@@ -46,5 +48,7 @@ export const apiService = {
   getAttendance,
   getTeacherSchedule,
   getExamType,
-  addExamType
+  addExamType,
+  getStudents,
+  addStudent
 };

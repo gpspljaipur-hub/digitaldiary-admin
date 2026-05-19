@@ -82,7 +82,7 @@ const ExamType = () => {
               ) : (
                 <tr>
                   <td colSpan="2" className="text-center py-10 text-gray-500">
-                    No Exams Found
+                    No Exam Found
                   </td>
                 </tr>
               )}

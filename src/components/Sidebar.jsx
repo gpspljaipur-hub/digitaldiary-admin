@@ -1,11 +1,12 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { tab } = useParams();
-  const activeTab = tab || "teacher";
+  const location = useLocation();
+  const activeTab = location.pathname.split("/").pop();
 
   const menuItems = [
+    { id: "dashboard", label: "Dashboard"},
     { id: "teacher", label: "Teacher" },
     { id: "class", label: "Class"},
     { id: "subject", label: "Subject"},
@@ -30,7 +31,7 @@ const Sidebar = () => {
           return (
             <button
               key={item.id}
-              onClick={() => navigate(`/dashboard/${item.id}`)}
+              onClick={() => navigate(`/${item.id}`)}
               className={`text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                 isActive
                   ? "bg-blue-600 text-white shadow-md shadow-blue-200"

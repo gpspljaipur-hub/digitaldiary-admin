@@ -22,6 +22,12 @@ const Login = () => {
           if (response.data) {
             localStorage.setItem('adminData', JSON.stringify(response.data));
           }
+          
+          const schoolId = response.data?.schoolId?._id || response.data?.schoolId;
+          if (schoolId) {
+            localStorage.setItem('schoolId', schoolId);
+          }
+          
           navigate('/dashboard');
         } else {
           alert(response?.message || 'Login failed');

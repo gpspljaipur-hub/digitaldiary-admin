@@ -29,6 +29,9 @@ export const getExamType = () => getPublic(ENDPOINTS.GET_EXAM_TYPE);
 export const addExamType = (data) => postPublic(ENDPOINTS.ADD_EXAM_TYPE, data);
 export const getStudents = (data) => postPublic(ENDPOINTS.GET_STUDENT, data);
 export const addStudent = (data) => postPublic(ENDPOINTS.ADD_STUDENT, data);
+export const addTeacherSchedule = (data) => postPublic(ENDPOINTS.ADD_TEACHER_SCHEDULE, data);
+export const getSchool = () => getPublic(ENDPOINTS.GET_SCHOOL);
+export const getLeave = (data) => postPublic(ENDPOINTS.GET_LEAVE, data);
 
 export const apiService = {
   adminRegister,
@@ -50,5 +53,8 @@ export const apiService = {
   getExamType,
   addExamType,
   getStudents,
-  addStudent
+  addStudent,
+  addTeacherSchedule,
+  getSchool,
+  getLeave
 };

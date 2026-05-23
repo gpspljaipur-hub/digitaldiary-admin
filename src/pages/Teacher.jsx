@@ -1,33 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { addTeacher } from "../config/apiService";
 import { apiService } from "../config/apiService";
-import { CloudSnow } from "lucide-react";
+import Select from "react-select";
+
 
 const Teacher = () => {
   const [teachers, setTeachers] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [subject, setSubject] = useState([]);
   const [showTeacherForm, setShowTeacherForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [teacherForm, setTeacherForm] = useState({
     name: "",
     email: "",
-    schoolName: "",
     password: "",
-    subjects: "",
+    classIds: [],
+    subjectIds: [],
   });
 
   useEffect(() => {
       fetchTeacher();
       fetchClasses();
     }, []);
-  
+
     const fetchClasses  = async () => {
       try{
         const data = await apiService.getClasses();
         setClasses(data);
       } catch(error){
         console.log("Error fetching classes", error);
+      }
+    };
+
+    const fetchSubject = async (classId) => {
+      if (!classId) {
+        setSubject([]);
+        return;
+      }
+      try {
+        const data = await apiService.getSubjects({ classId });
+        setSubject(Array.isArray(data) ? data : (data?.data || []));
+      } catch (error) {
+        console.log("Error fetching subjects", error);
       }
     };
 
@@ -52,29 +67,37 @@ const Teacher = () => {
     setLoading(true);
 
     try {
+      let schoolId = localStorage.getItem('schoolId');
+      if (!schoolId || schoolId === 'undefined' || schoolId === 'null') {
+        try {
+          const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+          schoolId = adminData?.schoolId?._id || adminData?.schoolId || null;
+        } catch (e) {
+          schoolId = null;
+        }
+      }
+
       const payload = {
         name: teacherForm.name,
         email: teacherForm.email,
-        schoolName: teacherForm.schoolName,
         password: teacherForm.password,
-        subject: teacherForm.subjects, 
+        classIds: teacherForm.classIds,
+        subjectIds: teacherForm.subjectIds, 
+        schoolId: schoolId,
       };
 
       const response = await addTeacher(payload);
 
       if (response?.success || response?.message || response?._id || response) {
         alert("Teacher added successfully!");
-        setTeachers([
-          ...teachers,
-          { ...teacherForm },
-        ]);
+       await fetchTeacher();
 
         setTeacherForm({
           name: "",
           email: "",
-          schoolName: "",
           password: "",
-          subjects: "",
+          classIds: [],
+          subjectIds: []
         });
 
         setShowTeacherForm(false);
@@ -116,19 +139,10 @@ const Teacher = () => {
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  School Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Subjects
                 </th>
                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Classes
-                </th>
-                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Experience
-                </th>
-                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Qualification
                 </th>
               </tr>
             </thead>
@@ -146,9 +160,6 @@ const Teacher = () => {
                       {teacher.email}
                     </td>
                     <td className="px-6 py-4">
-                      {teacher.schoolName}
-                    </td>
-                    <td className="px-6 py-4">
                       {teacher.subjectIds && teacher.subjectIds.length > 0
                         ? teacher.subjectIds.map((s) => s.name).join(", ")
                         : "—"}
@@ -157,12 +168,6 @@ const Teacher = () => {
                       {teacher.classIds && teacher.classIds.length > 0
                         ? teacher.classIds.map((s) => s.name).join(", ")
                         : "—"}
-                    </td>
-                    <td className="px-6 py-4">
-                      {teacher.experience} 
-                    </td>
-                    <td className="px-6 py-4">
-                      {teacher.qualification}
                     </td>
                   </tr>
                 ))
@@ -217,14 +222,6 @@ const Teacher = () => {
                 className="border p-3 rounded-lg"
               />
 
-              <input
-                type="text"
-                name="schoolName"
-                placeholder="School Name"
-                value={teacherForm.schoolName}
-                onChange={handleChange}
-                className="border p-3 rounded-lg"
-              />
 
               <input
                 type="password"
@@ -235,6 +232,84 @@ const Teacher = () => {
                 className="border p-3 rounded-lg"
               />
 
+              <div className="col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Classes
+  </label>
+
+  <Select
+    isMulti
+    options={classes.map((c) => ({
+      value: c._id || c.id,
+      label: c.className || c.name,
+    }))}
+
+    value={classes
+      .filter((c) =>
+        teacherForm.classIds.includes(c._id || c.id)
+      )
+      .map((c) => ({
+        value: c._id || c.id,
+        label: c.className || c.name,
+      }))
+    }
+
+    onChange={(selectedOptions) => {
+      const selectedClassIds = selectedOptions
+        ? selectedOptions.map((option) => option.value)
+        : [];
+
+      setTeacherForm({
+        ...teacherForm,
+        classIds: selectedClassIds,
+        subjectIds: [],
+      });
+
+      if (selectedClassIds.length > 0) {
+        fetchSubject(selectedClassIds[0]);
+      } else {
+        setSubject([]);
+      }
+    }}
+
+    placeholder="Select Classes"
+  />
+</div>
+
+              <div className="col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Subjects
+  </label>
+
+  <Select
+    isMulti
+    options={subject.map((s) => ({
+      value: s._id || s.id,
+      label: s.name || s.subjectName,
+    }))}
+
+    value={subject
+      .filter((s) =>
+        teacherForm.subjectIds.includes(s._id || s.id)
+      )
+      .map((s) => ({
+        value: s._id || s.id,
+        label: s.name || s.subjectName,
+      }))
+    }
+
+    onChange={(selectedOptions) => {
+      setTeacherForm({
+        ...teacherForm,
+        subjectIds: selectedOptions
+          ? selectedOptions.map((option) => option.value)
+          : [],
+      });
+    }}
+
+    placeholder="Select Subjects"
+  />
+</div>
 
               <button
                 type="submit"

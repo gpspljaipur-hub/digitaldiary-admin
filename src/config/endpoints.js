@@ -24,5 +24,8 @@ export const ENDPOINTS = {
    GET_EXAM_TYPE: "/examType/list",
    ADD_EXAM_TYPE: "examType/add",
    GET_STUDENT: "/students/list",
-   ADD_STUDENT: "/students/add"
+   ADD_STUDENT: "/students/add",
+   ADD_TEACHER_SCHEDULE: "/teacher-schedule/add",
+   GET_SCHOOL: "/school/list",
+   GET_LEAVE: "/leave/list"
 };

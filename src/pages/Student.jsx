@@ -66,7 +66,22 @@ const Student = () => {
     const handleStudentSubmit = async (e) => {
         e.preventDefault();
         try {
-            await apiService.addStudent(studentForm);
+            let schoolId = localStorage.getItem('schoolId');
+            if (!schoolId || schoolId === 'undefined' || schoolId === 'null') {
+                try {
+                    const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+                    schoolId = adminData?.schoolId?._id || adminData?.schoolId || null;
+                } catch (err) {
+                    schoolId = null;
+                }
+            }
+
+            const payload = {
+                ...studentForm,
+                schoolId
+            };
+
+            await apiService.addStudent(payload);
             if (selectedTeacher === studentForm.teacherId) {
                 fetchStudents();
             }

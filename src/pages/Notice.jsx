@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../config/apiService';
+import Select from 'react-select';
 
 const Notice = () => {
   const [notices, setNotices] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
   const [showNoticeForm, setShowNoticeForm] = useState(false);
+  const [selectedNotice, setSelectedNotice] = useState(null)
   const [noticeForm, setNoticeForm] = useState({
     title: "",
     message: "",
-    classId: "",
+    classId: [],
     status: ""
   });
 
@@ -52,11 +54,11 @@ const Notice = () => {
     try {
       console.log("Submitting notice:", noticeForm);
       await apiService.addNotice(noticeForm);
-      fetchNotices(selectedClassId || noticeForm.classId);
-      setNoticeForm({ title: "", message: "", classId: "", status: "" });
+      fetchNotices(selectedClassId || (noticeForm.classId.length > 0 ? noticeForm.classId[0] : ""));
+      setNoticeForm({ title: "", message: "", classId: [], status: "" });
       setShowNoticeForm(false);
     } catch (error) {
-      console.error("Error adding notice:", error);
+      console.log("Error adding notice:", error);
       alert("Failed to add notice. Please try again.");
     }
   };
@@ -99,9 +101,20 @@ const Notice = () => {
                   {notice.status}
                 </span>
               </div>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                {notice.message}
-              </p>
+            
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  {notice.message.split(" ").slice(0, 20).join(" ")}
+
+                  {notice.message.split(" ").length > 20 && "..."}
+                  </p>
+
+                  <button
+                   onClick={() => setSelectedNotice(notice)}
+                    className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                     >
+                     More Info...
+                     </button>
+              
               {notice.classData && notice.classData.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {notice.classData.map((cls, idx) => (
@@ -148,18 +161,23 @@ const Notice = () => {
               <div className="grid gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Target Class</label>
-                  <select
+                  <Select
+                    isMulti
                     name="classId"
-                    value={noticeForm.classId}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    required
-                  >
-                    <option value="" disabled>Select Class</option>
-                    {availableClasses.map((cls, idx) => (
-                      <option key={idx} value={cls._id || cls.id}>{cls.className || cls.name}</option>
-                    ))}
-                  </select>
+                    options={availableClasses.map(cls => ({ value: cls._id || cls.id, label: cls.className || cls.name }))}
+                    value={availableClasses
+                      .filter(cls => noticeForm.classId.includes(cls._id || cls.id))
+                      .map(cls => ({ value: cls._id || cls.id, label: cls.className || cls.name }))}
+                    onChange={(selectedOptions) => {
+                      setNoticeForm({
+                        ...noticeForm,
+                        classId: selectedOptions ? selectedOptions.map(option => option.value) : []
+                      });
+                    }}
+                    className="w-full"
+                    classNamePrefix="select"
+                    placeholder="Select Classes"
+                  />
                 </div>
               
 
@@ -201,6 +219,59 @@ const Notice = () => {
           </div>
         </div>
       )}
+
+            {selectedNotice && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+
+    <div className="bg-white w-full max-w-2xl rounded-2xl p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+
+      <button
+        onClick={() => setSelectedNotice(null)}
+        className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-600"
+      >
+        &times;
+      </button>
+
+      <div className="flex justify-between items-start mb-6 gap-4">
+
+        <h2 className="text-3xl font-bold text-gray-800">
+          {selectedNotice.title}
+        </h2>
+
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+            selectedNotice.status === "normal"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {selectedNotice.status}
+        </span>
+
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-2">
+
+        {selectedNotice.classData?.map((cls, idx) => (
+          <div
+            key={idx}
+            className="bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
+          >
+            {cls.className}
+          </div>
+        ))}
+
+      </div>
+
+      <p className="text-gray-700 leading-8 whitespace-pre-line">
+        {selectedNotice.message}
+      </p>
+
+    </div>
+
+  </div>
+)}
+
     </div>
   );
 };

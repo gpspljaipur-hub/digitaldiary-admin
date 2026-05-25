@@ -174,7 +174,7 @@ const Teacher = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="6"
                     className="text-center py-10 text-gray-500"
                   >
                     No Teachers Found

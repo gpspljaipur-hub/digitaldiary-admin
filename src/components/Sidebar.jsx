@@ -7,24 +7,42 @@ const Sidebar = () => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard"},
+    { id: "home", label: "Dashboard" },
     { id: "teacher", label: "Teacher" },
-    { id: "class", label: "Class"},
-    { id: "subject", label: "Subject"},
+    { id: "class", label: "Class" },
+    { id: "subject", label: "Subject" },
     { id: "notice", label: "Notice" },
     { id: "complaint", label: "Complaint" },
     { id: "leave", label: "Leave" },
     { id: "homework", label: "Homework" },
-    { id: "marks", label: "Marks"},
-    { id: "attendance", label: "Attendance"},
-    { id: "teacher-schedule", label: "Teacher Schedule"},
-    { id: "student", label: "Student"},
-    { id: "exam-type", label: "Exam Type"}
+    { id: "marks", label: "Marks" },
+    { id: "attendance", label: "Attendance" },
+    { id: "teacher-schedule", label: "Teacher Schedule" },
+    { id: "student", label: "Student" },
+    { id: "exam-type", label: "Exam Type" },
+    { id: "school-management", label: "School Management" },
+    { id: "school-registration", label: "School Registration"}
 
   ];
 
   return (
-    <div className="w-64 h-[calc(100vh-4rem)] sticky top-16 flex-shrink-0 bg-white border-r border-gray-200 shadow-sm text-gray-800 flex flex-col overflow-auto">
+    <div className="w-72 h-screen sticky top-0 flex-shrink-0 bg-[#0b1c30] text-white flex flex-col overflow-auto">
+      <div className="p-6 flex items-center gap-4">
 
+        <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+
+        <img
+            src="/logo.png"
+            alt="Logo"
+            className="w-10 h-10 object-contain"
+          />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold leading-none">DSDS Portal</h1>
+          <p className="text-xs tracking-[4px] text-gray-300 mt-2 font-semibold uppercase">Education Management</p>
+        </div>
+
+      </div>
       <div className="flex flex-col gap-2 p-4 mt-2">
         {menuItems.map((item) => {
           const isActive = activeTab === item.id;

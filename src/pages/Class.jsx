@@ -55,7 +55,7 @@ const Class = () => {
           className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-medium"
         >
           Add Class
-        </button>
+        </button>6
       </div>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden w-fit min-w-[350px]">

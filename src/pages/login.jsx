@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../config/apiService';
+import { Landmark, Shield,Lock, Eye, EyeOff, LogIn, UserCheck, ShieldCheck, Phone } from 'lucide-react';
+import loginImage from '../assets/login.png';
 
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -39,59 +42,162 @@ const Login = () => {
         setLoading(false);
       }
     } else {
-      alert("Please enter mobile number and password.");
+      alert("Please enter credentials.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-5">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-10 animate-[slideUp_0.4s_ease-out]">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Login</h1>
-          <p className="text-slate-500 text-sm">Welcome back, please login to continue</p>
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
+      {/* Header */}
+      <header className="w-full bg-white border-b border-gray-200 px-8 py-3 flex justify-between items-center z-10">
+        <div className="flex items-center gap-2 text-[#0A2240]">
+          <Landmark size={24} />
+          <span className="text-xl font-bold tracking-tight">DSDS Admin</span>
         </div>
-        <form onSubmit={handleLogin}>
-          <div className="mb-5 text-left">
-            <label className="block text-sm font-medium mb-2 text-slate-900" htmlFor="mobileNumber">Mobile Number</label>
-            <input
-              type="tel"
-              id="mobileNumber"
-              maxLength={10}
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-[15px] text-slate-900 transition-all duration-200 focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-600/10"
-              placeholder="Enter your mobile number"
-              value={mobileNumber}
-              onChange={(e) => setMobileNumber(e.target.value)}
-              required
+        <div className="flex items-center gap-4 text-xs font-semibold text-gray-500 uppercase tracking-widest">
+          <span>GOVT. OF PUNJAB</span>
+          <div className="w-8 h-px bg-gray-300"></div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="flex-1 max-w-[1400px] mx-auto w-full flex flex-col lg:flex-row items-center justify-between p-4 lg:px-12 lg:py-4 gap-8">
+        
+        {/* Left Side Content */}
+        <div className="flex-1 w-full max-w-2xl">
+          <div className="inline-flex items-center gap-2 bg-[#F0F5FF] px-3 py-1.5 rounded-full mb-4">
+            <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+            <span className="text-xs font-bold text-blue-700 tracking-wider">EDUCATION DEPARTMENT PORTAL</span>
+          </div>
+          
+          <h1 className="text-4xl lg:text-[46px] font-bold text-[#0A1629] leading-tight mb-3 tracking-tight">
+            Digital School Diary System
+          </h1>
+          
+          <p className="text-base text-gray-600 mb-4 max-w-xl leading-relaxed">
+            Transforming School Governance through Digital Integration. A centralized, secure hub for managing educational data with precision and authority.
+          </p>
+
+          <div className="rounded-2xl overflow-hidden bg-[#0A1B35] max-w-[420px] mx-auto lg:mx-0 shadow-2xl border border-gray-100">
+            <img 
+              src={loginImage} 
+              alt="Digital Integration Illustration" 
+              className="w-full h-auto object-cover opacity-90"
             />
           </div>
-          <div className="mb-5 text-left">
-            <label className="block text-sm font-medium mb-2 text-slate-900" htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-[15px] text-slate-900 transition-all duration-200 focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-600/10"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+        </div>
+
+        {/* Right Side Form */}
+        <div className="w-full max-w-[440px] lg:mt-0 mt-6">
+          <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 relative overflow-hidden">
+            
+            {/* Background Shield Icon Accent */}
+            <div className="absolute top-6 right-6 text-gray-100">
+              <Shield size={80} strokeWidth={1} />
+            </div>
+
+            <div className="relative z-10">
+              <h2 className="text-[28px] font-bold text-[#0A1629] mb-1">Authorized Login</h2>
+              <p className="text-gray-500 text-sm mb-6">Access your administrative dashboard</p>
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                {/* Email Input */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-4 text-gray-400">
+                      <Phone size={18} />
+                    </div>
+                    <input
+                      type="text"
+                      className="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400 font-medium text-gray-900"
+                      placeholder="Enter your mobile number"
+                      value={mobileNumber}
+                      onChange={(e) => setMobileNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Password Input */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-semibold text-gray-700">Password</label>
+                    <a href="#" className="text-xs font-semibold text-blue-600 hover:text-blue-700">Forgot password?</a>
+                  </div>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-4 text-gray-400">
+                      <Lock size={18} />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="w-full pl-11 pr-12 py-3 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400 font-medium text-gray-900 tracking-wider"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-center pt-2">
+                  <p className="text-sm font-medium text-gray-600">
+                    Don't have an account?{' '}
+                    <span 
+                      onClick={() => navigate('/schoolname')} 
+                      className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer transition-colors"
+                    >
+                      Register here
+                    </span>
+                  </p>
+                </div>
+                
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3.5 bg-[#091F3C] hover:bg-[#112d54] text-white rounded-xl text-[15px] font-bold transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-[#091F3C]/20 active:scale-[0.98]"
+                >
+                  {loading ? "Authenticating..." : "Access Portal"}
+                  {!loading && <LogIn size={18} className="ml-1" />}
+                </button>
+              </form>
+            </div>
+
+            {/* Footer Security Icons */}
+            <div className="mt-6 pt-5 border-t border-gray-100 flex flex-col items-center gap-3">
+              <span className="text-[11px] font-semibold text-gray-500 tracking-wide uppercase">Secured with AES-256 Encryption</span>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400">
+                  <UserCheck size={16} />
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400">
+                  <ShieldCheck size={16} />
+                </div>
+              </div>
+            </div>
+
+
+           
+
           </div>
-          <div className="mb-4 text-center">
-            <p className="text-sm text-slate-600">
-              Don't have an account?{' '}
-              <span 
-                className="text-blue-600 font-semibold cursor-pointer hover:underline"
-                onClick={() => navigate('/schoolname')}
-              >
-                Register
-              </span>
-            </p>
-          </div>
-          <button type="submit" disabled ={loading} className="w-full py-3.5 bg-blue-600 text-white rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] mt-2">
-            Login
-          </button>
-        </form>
+        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="w-full text-center py-4 mt-auto border-t border-gray-200">
+        <p className="text-xs font-semibold text-gray-500 tracking-wide">
+          © 2024 Punjab Education Department. Secure Government Portal. Powered by Optatech Innovations
+        </p>
+      </footer>
     </div>
   );
 };

@@ -6,14 +6,15 @@ const Role = () => {
     const navigate = useNavigate();
     const [selectedRole, setSelectedRole] = useState("super_admin");
 
+
     const handleContinue = () => {
-        navigate("/login");
-    };
+    localStorage.setItem("role", selectedRole);
+    navigate("/login");
+};
 
     return (
         <div className="min-h-screen flex font-sans bg-white">
             
-            {/* Left Side Image Container - Hidden on small screens */}
             <div className="hidden lg:block lg:w-[55%] bg-gray-100 relative overflow-hidden">
                 <img 
                     src={superAdminImage} 
@@ -22,7 +23,6 @@ const Role = () => {
                 />
             </div>
 
-            {/* Right Side Form Container */}
             <div className="w-full lg:w-[45%] flex items-center justify-center p-6 lg:p-12">
                 <div className="w-full max-w-md">
                     <p className="text-[#0A1629] font-bold text-[13px] tracking-[0.15em] mb-3">
@@ -61,7 +61,6 @@ const Role = () => {
                             Open {selectedRole === 'super_admin' ? 'Super Admin' : 'School Admin'} Panel
                         </button>
                     </div>
-
                 </div>
             </div>
 

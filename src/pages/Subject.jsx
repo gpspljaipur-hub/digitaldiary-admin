@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
+import { Plus, X } from "lucide-react";
 
 const Subject = () => {
   const [subjects, setSubjects] = useState([]);
@@ -65,16 +66,21 @@ const Subject = () => {
   };
 
   return (
-    <div className="relative">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Subjects List
-        </h2>
-        <div className="flex gap-4 w-full sm:w-auto">
+    <div className="w-full h-full p-2 relative">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-[#0B132B] mb-2">
+            Subjects List
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Manage your school subjects and filter by class
+          </p>
+        </div>
+        <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <select 
             value={selectedClassId}
             onChange={(e) => fetchSubjects(e.target.value)}
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 min-w-[200px]"
+            className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
           >
             <option value="">Select a Class to View</option>
             {availableClasses.map((cls, index) => (
@@ -85,40 +91,44 @@ const Subject = () => {
           </select>
           <button
             onClick={() => setShowSubjectForm(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-medium whitespace-nowrap"
+            className="bg-[#0A1629] hover:bg-[#112443] text-white px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all shadow-sm whitespace-nowrap"
           >
+            <Plus size={20} />
             Add Subject
           </button>
         </div>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+      <div className="bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] rounded-[20px] overflow-hidden border border-gray-50">
+        <div className="p-6 border-b border-gray-100">
+            <h3 className="text-xl font-bold text-[#0B132B]">All Subjects</h3>
+        </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-[#f8f9fc] text-[#6b7280]">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   S.No
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Subject Name
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Class Name
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100 text-[#374151]">
               {subjects.length > 0 ? (
                 subjects.map((sub, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">
                       {index + 1}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 font-medium">
                       {sub.name || sub.subjectName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 text-gray-600">
                       {sub.classId?.name || sub.className}
                     </td>
                   </tr>
@@ -136,53 +146,66 @@ const Subject = () => {
       </div>
 
       {showSubjectForm && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white w-full max-w-lg rounded-xl p-8 relative shadow-2xl">
-            <button
-              onClick={() => setShowSubjectForm(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
-            >
-              &times;
-            </button>
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Subject</h2>
-            <form onSubmit={handleSubjectSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subject Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Enter subject name"
-                  value={subjectForm.name}
-                  onChange={handleSubjectChange}
-                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                <select
-                  name="classId"
-                  value={subjectForm.classId}
-                  onChange={handleSubjectChange}
-                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  required
-                >
-                  <option value="" disabled>Select a Class</option>
-                  {availableClasses.map((cls, index) => (
-                    <option key={index} value={cls._id || cls.id}>
-                      {cls.className || cls.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-lg rounded-[24px] shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-xl font-bold text-[#0B132B]">Add New Subject</h2>
               <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg mt-2 transition-colors"
+                type="button"
+                onClick={() => setShowSubjectForm(false)}
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors"
               >
-                Submit Subject
+                <X size={20} />
               </button>
+            </div>
+            <form onSubmit={handleSubjectSubmit} className="p-6">
+              <div className="flex flex-col gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Subject Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter subject name"
+                    value={subjectForm.name}
+                    onChange={handleSubjectChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Class</label>
+                  <select
+                    name="classId"
+                    value={subjectForm.classId}
+                    onChange={handleSubjectChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all"
+                    required
+                  >
+                    <option value="" disabled>Select a Class</option>
+                    {availableClasses.map((cls, index) => (
+                      <option key={index} value={cls._id || cls.id}>
+                        {cls.className || cls.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="pt-5 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button
+                    type="button"
+                    onClick={() => setShowSubjectForm(false)}
+                    className="px-5 py-2.5 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    className="bg-[#0A1629] hover:bg-[#112443] text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm"
+                >
+                    Submit
+                </button>
+              </div>
             </form>
           </div>
         </div>

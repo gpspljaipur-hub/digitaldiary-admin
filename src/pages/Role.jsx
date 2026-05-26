@@ -62,20 +62,6 @@ const Role = () => {
                         </button>
                     </div>
 
-                    <div className="space-y-4">
-                        <button 
-                            onClick={() => { setSelectedRole("super_admin"); navigate("/login"); }}
-                            className="w-full border border-gray-200 bg-[#f8fafc] hover:bg-gray-100 text-[#131d27] font-bold text-[17px] py-4 px-6 rounded-2xl transition duration-200"
-                        >
-                            Demo Super Admin
-                        </button>
-                        <button 
-                            onClick={() => { setSelectedRole("school_admin"); navigate("/login"); }}
-                            className="w-full border border-gray-200 bg-[#f8fafc] hover:bg-gray-100 text-[#131d27] font-bold text-[17px] py-4 px-6 rounded-2xl transition duration-200"
-                        >
-                            Demo School Admin
-                        </button>
-                    </div>
                 </div>
             </div>
 

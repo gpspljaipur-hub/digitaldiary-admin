@@ -8,15 +8,14 @@ const Layout = () => {
   const showSidebar = !hideSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        {showSidebar && <Sidebar />}
+    <div className="flex h-screen overflow-hidden bg-gray-50">
+      {showSidebar && <Sidebar />}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header />
         <main className={`flex-1 overflow-y-auto bg-gray-50 text-gray-900 ${showSidebar ? 'p-10' : 'p-6'}`}>
           <Outlet />
         </main>
       </div>
-
     </div>
   )
 }

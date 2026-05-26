@@ -1,4 +1,3 @@
-// import '../styles.css'
 import React from 'react'
 import { Building2, MapPin, Phone, BookOpen, AlertTriangle, BadgeCheck } from 'lucide-react'
 
@@ -406,6 +405,12 @@ export default SchoolRegistration
 
 
 
+
+
+
+
+
+// import '../styles.css'
 // import React, { useMemo, useState } from "react";
 // import { createRoot } from "react-dom/client";
 // import {

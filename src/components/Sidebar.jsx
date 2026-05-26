@@ -21,7 +21,9 @@ const Sidebar = () => {
     { id: "student", label: "Student" },
     { id: "exam-type", label: "Exam Type" },
     { id: "school-management", label: "School Management" },
-    { id: "school-registration", label: "School Registration"}
+    { id: "school-registration", label: "School Registration"},
+    { id: "admin", label: "Admin" },
+    { id: "user", label: "User" }
 
   ];
 
@@ -52,8 +54,8 @@ const Sidebar = () => {
               onClick={() => navigate(`/${item.id}`)}
               className={`text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                  : "text-gray-600 hover:bg-blue-50 hover:text-blue-700"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-600 hover:bg-[#112443] hover:text-white"
               }`}
             >
               {item.label}

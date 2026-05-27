@@ -5,16 +5,20 @@ import { useAddClassMutation, useGetClassesQuery } from "../redux/services/api";
 const Class = () => {
 
   const [showClassForm, setShowClassForm] = useState(false);
-
+  
   const [classForm, setClassForm] = useState({
     name: "",
   });
 
-  const {
-    data: classes = [],
-    isLoading,
-    error,
-  } = useGetClassesQuery();
+  const schoolId = localStorage.getItem("schoolId");
+
+ const {
+  data: response = {},
+  isLoading,
+  error,
+} = useGetClassesQuery(schoolId);
+
+const classes = response|| [];
 
   const [addClass] = useAddClassMutation();
 
@@ -30,7 +34,7 @@ const Class = () => {
 
     try {
 
-      await addClass(classForm).unwrap();
+      await addClass({...classForm, schoolId}).unwrap();
 
       setClassForm({
         name: "",

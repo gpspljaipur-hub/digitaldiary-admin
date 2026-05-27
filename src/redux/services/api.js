@@ -13,10 +13,20 @@ export const api = createApi({
   endpoints: (builder) => ({
 
     getClasses: builder.query({
-      query: () => "/classes/all",
 
-      providesTags: ["Classes"],
-    }),
+        query: (schoolId) => ({
+          url: "/classes/school-classes",
+
+          method: "POST",
+
+          body: {
+            schoolId,
+          },
+        }),
+
+        providesTags: ["Classes"],
+
+      }),
 
     addClass: builder.mutation({
         query: (body) => ({

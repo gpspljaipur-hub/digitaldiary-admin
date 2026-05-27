@@ -12,6 +12,7 @@ const Sidebar = () => {
   const superAdminMenu = [
     { id: "dashboard", label: "Dashboard" },
     { id: "school-management", label: "Schools" },
+    { id: "admin", label: "Admin" },
   ];
 
   const schoolAdminMenu = [
@@ -28,10 +29,7 @@ const Sidebar = () => {
     { id: "attendance", label: "Attendance" },
     { id: "teacher-schedule", label: "Teacher Schedule" },
     { id: "exam-type", label: "Exam Type" },
-    { id: "school-management", label: "School Management" },
-    { id: "school-registration", label: "School Registration"},
-    { id: "admin", label: "Admin" },
-    { id: "user", label: "User" }
+
 
   ];
 

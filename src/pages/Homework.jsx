@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
+import Pagination from "../components/Pagination";
 
 const Homework = () => {
   const [homeworkList, setHomeworkList] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchClasses();
@@ -33,17 +36,25 @@ const Homework = () => {
     }
   };
 
+  const totalPages = Math.max(1, Math.ceil(homeworkList.length / itemsPerPage));
+  const currentHomework = homeworkList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <div className="relative">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Homework List
-        </h2>
-        <div className="flex gap-4 w-full sm:w-auto">
+    <div className="w-full h-full p-2 relative">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-[#0B132B] mb-2">
+            Homework List
+          </h2>
+          <p className="text-gray-500 text-sm">
+            View assigned homework by class
+          </p>
+        </div>
+        <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <select
             value={selectedClassId}
             onChange={(e) => fetchHomework(e.target.value)}
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 min-w-[200px]"
+            className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
           >
             <option value="" disabled>Select a Class to view homework</option>
             {availableClasses.map((cls, index) => (
@@ -55,52 +66,55 @@ const Homework = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+      <div className="bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] rounded-[20px] overflow-hidden border border-gray-50">
+        <div className="p-6 border-b border-gray-100">
+            <h3 className="text-xl font-bold text-[#0B132B]">Assigned Homework</h3>
+        </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-[#f8f9fc] text-[#6b7280]">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   S.No
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Class Name
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Subject Name
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Homework
                 </th>
-                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Status
                 </th>
 
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {homeworkList.length > 0 ? (
-                homeworkList.map((hw, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {index + 1}
+            <tbody className="divide-y divide-gray-100 text-[#374151]">
+              {currentHomework.length > 0 ? (
+                currentHomework.map((hw, index) => (
+                  <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 font-medium">
                       {hw.className || "N/A"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 font-medium">
                       {hw.subjectName || "N/A"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 text-gray-600">
                       {hw.date ? new Date(hw.date).toLocaleDateString() : "N/A"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-md truncate" title={hw.message}>
+                    <td className="px-6 py-4 text-gray-600 max-w-md truncate" title={hw.message}>
                       {hw.message || "N/A"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${hw.isImportant ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                         {hw.isImportant ? "Important" : "Normal"}
                       </span>
@@ -116,6 +130,14 @@ const Homework = () => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="p-6 border-t border-gray-100 flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            alwaysShow={true}
+          />
         </div>
       </div>
     </div>

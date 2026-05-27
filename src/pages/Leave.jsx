@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../config/apiService';
+import { X } from 'lucide-react';
+import Pagination from "../components/Pagination";
 
 const Leave = () => {
   const [leaves, setLeaves] = useState([]);
@@ -8,6 +10,8 @@ const Leave = () => {
   const [selectedTeacherId, setSelectedTeacherId] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState("");
   const [selectedLeave, setSelectedLeave] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchTeacher();
@@ -72,17 +76,25 @@ const Leave = () => {
     }
   };
 
+  const totalPages = Math.max(1, Math.ceil(leaves.length / itemsPerPage));
+  const currentLeaves = leaves.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <div className="relative">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Leave Management
-        </h2>
-        <div className="flex gap-4 w-full sm:w-auto">
+    <div className="w-full h-full p-2 relative">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-[#0B132B] mb-2">
+            Leave Management
+          </h2>
+          <p className="text-gray-500 text-sm">
+            View and manage student leave requests
+          </p>
+        </div>
+        <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <select
             value={selectedTeacherId}
             onChange={(e) => setSelectedTeacherId(e.target.value)}
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 min-w-[200px]"
+            className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
           >
             <option value="" disabled>Select Teacher</option>
             {teacher && teacher.map((t, index) => (
@@ -94,7 +106,7 @@ const Leave = () => {
           <select
             value={selectedStudentId}
             onChange={(e) => setSelectedStudentId(e.target.value)}
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-blue-500 min-w-[200px]"
+            className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px] disabled:opacity-50 disabled:bg-gray-50"
             disabled={!selectedTeacherId}
           >
             <option value="" disabled>Select Student</option>
@@ -107,51 +119,54 @@ const Leave = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+      <div className="bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] rounded-[20px] overflow-hidden border border-gray-50">
+        <div className="p-6 border-b border-gray-100">
+            <h3 className="text-xl font-bold text-[#0B132B]">All Leave Requests</h3>
+        </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-[#f8f9fc] text-[#6b7280]">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Serial No.
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Student Name
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Start Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   End Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold tracking-wide">
                   Message
                 </th>
-                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Status
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {leaves && leaves.length > 0 ? (
-                leaves.map((leave, index) => (
-                  <tr key={leave._id || leave.id || index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {index + 1}
+            <tbody className="divide-y divide-gray-100 text-[#374151]">
+              {currentLeaves && currentLeaves.length > 0 ? (
+                currentLeaves.map((leave, index) => (
+                  <tr key={leave._id || leave.id || index} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 font-medium">
                       {leave.studentName || leave.name || "—"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 text-gray-600">
                       {new Date(leave.startDate).toLocaleDateString() || "—"}
 
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 text-gray-600">
                       {new Date(leave.endDate).toLocaleDateString() || "—"}
                     </td>
-                   <td className="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                   <td className="px-6 py-4 text-gray-600 max-w-xs">
 
-                        <p>
+                        <p className="truncate">
                           {leave.message
                             ? leave.message.split(" ").slice(0, 5).join(" ")
                             : "—"}
@@ -162,14 +177,14 @@ const Leave = () => {
                         {leave.message?.split(" ").length > 5 && (
                           <button
                             onClick={() => setSelectedLeave(leave)}
-                            className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2"
+                            className="text-blue-600 hover:text-blue-700 text-sm font-semibold mt-2"
                           >
                             More Info...
                           </button>
                         )}
 
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${getStatusColor(leave.status)}`}>
                           {leave.status || "—"}
                         </span>
@@ -186,77 +201,86 @@ const Leave = () => {
             </tbody>
           </table>
         </div>
+        <div className="p-6 border-t border-gray-100 flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            alwaysShow={true}
+          />
+        </div>
       </div>
-                    {selectedLeave && (
-                <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
+      {selectedLeave && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-lg rounded-[24px] relative shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-[#0B132B]">
+                  Leave Details
+                </h2>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold capitalize whitespace-nowrap ${getStatusColor(selectedLeave.status)}`}
+                >
+                  {selectedLeave.status || "N/A"}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedLeave(null)}
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-                  <div className="bg-white w-full max-w-lg rounded-2xl p-6 relative shadow-xl">
-
-                    <button
-                      onClick={() => setSelectedLeave(null)}
-                      className="absolute top-4 right-4 text-xl text-gray-400 hover:text-gray-600"
-                    >
-                      &times;
-                    </button>
-
-                    <div className="flex justify-between items-center mb-5">
-
-                      <h2 className="text-2xl font-bold text-gray-800">
-                        Leave Details
-                      </h2>
-
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusColor(selectedLeave.status)}`}
-                      >
-                        {selectedLeave.status || "N/A"}
-                      </span>
-
-                    </div>
-
-                    <div className="space-y-4 text-sm">
-
-                      <div>
-                        <span className="font-semibold text-gray-700">
-                          Student:
-                        </span>{" "}
-                        <span className="text-gray-600">
-                          {selectedLeave.studentName || "N/A"}
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="font-semibold text-gray-700">
-                          Duration:
-                        </span>{" "}
-                        <span className="text-gray-600">
-                          {selectedLeave.startDate
-                            ? new Date(selectedLeave.startDate).toLocaleDateString("en-IN")
-                            : "N/A"}{" "}
-                          -{" "}
-                          {selectedLeave.endDate
-                            ? new Date(selectedLeave.endDate).toLocaleDateString("en-IN")
-                            : "N/A"}
-                        </span>
-                      </div>
-
-                      <div>
-                        <p className="font-semibold text-gray-700 mb-2">
-                          Message:
-                        </p>
-
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-52 overflow-y-auto">
-                          <p className="text-gray-600 leading-7 whitespace-pre-line">
-                            {selectedLeave.message || "No Message"}
-                          </p>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </div>
-
+            <div className="p-8">
+              <div className="grid gap-6 mb-8 bg-[#f8f9fc] p-5 rounded-2xl border border-gray-100">
+                <div>
+                  <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">
+                    Student
+                  </p>
+                  <p className="text-lg font-bold text-[#0B132B]">
+                    {selectedLeave.studentName || "N/A"}
+                  </p>
                 </div>
-              )}
+                <div>
+                  <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">
+                    Duration
+                  </p>
+                  <p className="text-[#0B132B] font-semibold">
+                    {selectedLeave.startDate
+                      ? new Date(selectedLeave.startDate).toLocaleDateString("en-IN")
+                      : "N/A"}{" "}
+                    -{" "}
+                    {selectedLeave.endDate
+                      ? new Date(selectedLeave.endDate).toLocaleDateString("en-IN")
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">
+                  Message
+                </h4>
+                <div className="border-l-4 border-[#0A1629] pl-4 max-h-52 overflow-y-auto">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line text-[15px]">
+                    {selectedLeave.message || "No Message"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-[24px] flex justify-end">
+                <button
+                    onClick={() => setSelectedLeave(null)}
+                    className="bg-[#0A1629] hover:bg-[#112443] text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm"
+                >
+                    Close
+                </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
     </div>

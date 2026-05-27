@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
+import Pagination from "../components/Pagination";
 
 const Attendance = () => {
     const [teachers, setTeachers] = useState([]);
@@ -7,6 +8,8 @@ const Attendance = () => {
     const [selectedDate, setSelectedDate] = useState("");
     const [attendanceRecords, setAttendanceRecords] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         fetchTeacher();
@@ -46,6 +49,8 @@ const Attendance = () => {
     }
 };
 
+const totalPages = Math.max(1, Math.ceil(attendanceRecords.length / itemsPerPage));
+const currentAttendance = attendanceRecords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   return (
     <div className="w-full h-full p-2 relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -118,11 +123,11 @@ const Attendance = () => {
                                     Loading...
                                 </td>
                             </tr>
-                        ) : attendanceRecords.length > 0 ? (
-                            attendanceRecords.map((record, index) => (
+                        ) : currentAttendance.length > 0 ? (
+                            currentAttendance.map((record, index) => (
                                 <tr key={record._id} className="hover:bg-gray-50/50 transition-colors">
                                     <td className="px-6 py-4 font-medium text-gray-900">
-                                        {index + 1}
+                                        {(currentPage - 1) * itemsPerPage + index + 1}
                                     </td>
                                     <td className="px-6 py-4 font-medium">
                                         {record.studentName}
@@ -156,7 +161,15 @@ const Attendance = () => {
                     </tbody>
                 </table>
             </div>
+        <div className="p-6 border-t border-gray-100 flex justify-end">
+            <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                alwaysShow={true}
+            />
         </div>
+      </div>
     </div>
   );
 };

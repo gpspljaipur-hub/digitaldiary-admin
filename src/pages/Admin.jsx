@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
+import Pagination from "../components/Pagination";
 
 const Admin = () => {
     const [admins, setAdmins] = useState([
@@ -12,6 +13,8 @@ const Admin = () => {
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -32,6 +35,9 @@ const Admin = () => {
         setFormData({ name: "", email: "", phone: "", school: "" });
         setIsModalOpen(false);
     };
+
+    const totalPages = Math.max(1, Math.ceil(admins.length / itemsPerPage));
+    const currentAdmins = admins.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (
         <div className="w-full h-full p-2">
@@ -72,16 +78,16 @@ const Admin = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 text-[#374151]">
-                            {admins.map((admin, index) => (
+                            {currentAdmins.map((admin, index) => (
                                 <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{index + 1}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                                     <td className="px-6 py-4 font-medium">{admin.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{admin.email}</td>
                                     <td className="px-6 py-4 text-gray-600">{admin.phone}</td>
                                     <td className="px-6 py-4 text-gray-600">{admin.school}</td>
                                 </tr>
                             ))}
-                            {admins.length === 0 && (
+                            {currentAdmins.length === 0 && (
                                 <tr>
                                     <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
                                         No admins found. Click "Create Admin" to add one.
@@ -91,9 +97,16 @@ const Admin = () => {
                         </tbody>
                     </table>
                 </div>
+                <div className="p-6 border-t border-gray-100 flex justify-end">
+                    <Pagination 
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        alwaysShow={true}
+                    />
+                </div>
             </div>
 
-            {/* Modal for Create Admin */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
                     <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">

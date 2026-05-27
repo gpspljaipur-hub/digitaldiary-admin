@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../config/apiService';
 import { X } from 'lucide-react';
+import Pagination from "../components/Pagination";
 
 const Leave = () => {
   const [leaves, setLeaves] = useState([]);
@@ -9,6 +10,8 @@ const Leave = () => {
   const [selectedTeacherId, setSelectedTeacherId] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState("");
   const [selectedLeave, setSelectedLeave] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchTeacher();
@@ -72,6 +75,9 @@ const Leave = () => {
         return 'bg-gray-100 text-gray-700'; 
     }
   };
+
+  const totalPages = Math.max(1, Math.ceil(leaves.length / itemsPerPage));
+  const currentLeaves = leaves.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="w-full h-full p-2 relative">
@@ -142,11 +148,11 @@ const Leave = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
-              {leaves && leaves.length > 0 ? (
-                leaves.map((leave, index) => (
+              {currentLeaves && currentLeaves.length > 0 ? (
+                currentLeaves.map((leave, index) => (
                   <tr key={leave._id || leave.id || index} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900">
-                      {index + 1}
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-4 font-medium">
                       {leave.studentName || leave.name || "—"}
@@ -194,6 +200,14 @@ const Leave = () => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="p-6 border-t border-gray-100 flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            alwaysShow={true}
+          />
         </div>
       </div>
       {selectedLeave && (

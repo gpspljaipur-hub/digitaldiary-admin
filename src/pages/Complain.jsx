@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
 import { Plus, X } from "lucide-react";
+import Pagination from "../components/Pagination";
 
 const Complain = () => {
   const [complains, setComplains] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState(null)
   const [categoryForm, setCategoryForm] = useState({
@@ -57,6 +60,9 @@ const Complain = () => {
       setLoading(false);
     }
   };
+
+  const totalPages = Math.ceil(complains.length / itemsPerPage);
+  const currentComplaints = complains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="w-full h-full p-2 relative">
@@ -112,11 +118,11 @@ const Complain = () => {
                     Loading...
                   </td>
                 </tr>
-              ) : complains.length > 0 ? (
-                complains.map((complain, index) => (
+              ) : currentComplaints.length > 0 ? (
+                currentComplaints.map((complain, index) => (
                   <tr key={complain._id || index} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900">
-                      {index + 1}
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-4 font-medium">
                       {complain.studentName || "N/A"}
@@ -159,6 +165,15 @@ const Complain = () => {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-gray-100 flex justify-end">
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
 
       {showCategoryForm && (

@@ -3,12 +3,16 @@ import { addTeacher } from "../config/apiService";
 import { apiService } from "../config/apiService";
 import Select from "react-select";
 import { Plus, X } from "lucide-react";
+import Pagination from "../components/Pagination";
+
 const Teacher = () => {
   const [teachers, setTeachers] = useState([]);
   const [classes, setClasses] = useState([]);
   const [subject, setSubject] = useState([]);
   const [showTeacherForm, setShowTeacherForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const [teacherForm, setTeacherForm] = useState({
     name: "",
@@ -111,6 +115,9 @@ const Teacher = () => {
     }
   };
 
+  const totalPages = Math.max(1, Math.ceil(teachers.length / itemsPerPage));
+  const currentTeachers = teachers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className="w-full h-full p-2 relative">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -157,8 +164,8 @@ const Teacher = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
-              {teachers.length > 0 ? (
-                teachers.map((teacher, index) => (
+              {currentTeachers.length > 0 ? (
+                currentTeachers.map((teacher, index) => (
                   <tr
                     key={index}
                     className="hover:bg-gray-50/50 transition-colors"
@@ -193,6 +200,15 @@ const Teacher = () => {
               )}
             </tbody>
           </table>
+        </div>
+        
+        <div className="p-6 border-t border-gray-100 flex justify-end">
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            alwaysShow={true}
+          />
         </div>
       </div>
 

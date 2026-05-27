@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
 import { Plus, X } from "lucide-react";
+import Pagination from "../components/Pagination";
 
 const Subject = () => {
   const [subjects, setSubjects] = useState([]);
@@ -12,6 +13,8 @@ const Subject = () => {
 
   const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchClasses();
@@ -64,6 +67,9 @@ const Subject = () => {
       console.error("Error adding subject:", error);
     }
   };
+
+  const totalPages = Math.max(1,Math.ceil(subjects.length/itemsPerPage));
+  const currentSubjects = subjects.slice((currentPage-1)*itemsPerPage,currentPage * itemsPerPage)
 
   return (
     <div className="w-full h-full p-2 relative">
@@ -119,11 +125,11 @@ const Subject = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
-              {subjects.length > 0 ? (
-                subjects.map((sub, index) => (
+              {currentSubjects.length > 0 ? (
+                currentSubjects.map((sub, index) => (
                   <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900">
-                      {index + 1}
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-4 font-medium">
                       {sub.name || sub.subjectName}
@@ -142,6 +148,14 @@ const Subject = () => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="p-6 border-t border-gray-100 flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            alwaysShow={true}
+          />
         </div>
       </div>
 

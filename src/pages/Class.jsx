@@ -135,6 +135,7 @@ const classes = response|| [];
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
+              alwaysShow={true}
             />
           </div>
         )}

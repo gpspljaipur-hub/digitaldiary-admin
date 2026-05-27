@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
+import Pagination from "../components/Pagination";
 
 const Marks = () => {
   const [marksList, setMarksList] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchClasses();
@@ -32,6 +35,10 @@ const Marks = () => {
       console.error("Error fetching marks:", error);
     }
   };
+
+  const totalPages = Math.max(1, Math.ceil(marksList.length / itemsPerPage));
+  const currentMarks = marksList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className="w-full h-full p-2 relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -85,11 +92,11 @@ const Marks = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-[#374151]">
-                        {marksList.length > 0 ? (
-                          marksList.map((mark, index) => (
+                        {currentMarks.length > 0 ? (
+                          currentMarks.map((mark, index) => (
                             <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                               <td className="px-6 py-4 font-medium text-gray-900">
-                                {index + 1}
+                                {(currentPage - 1) * itemsPerPage + index + 1}
                               </td>
                               <td className="px-6 py-4 font-medium">
                                 {mark.studentName || "N/A"}
@@ -117,6 +124,14 @@ const Marks = () => {
                         )}
                     </tbody>
                 </table>
+            </div>
+            <div className="p-6 border-t border-gray-100 flex justify-end">
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    alwaysShow={true}
+                />
             </div>
         </div>
     </div>

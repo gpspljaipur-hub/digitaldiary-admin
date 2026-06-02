@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { apiService } from '../config/apiService';
+import React, { useState} from 'react';
 import Select from 'react-select';
 import { Plus, X } from 'lucide-react';
+import { useGetClassesQuery } from '../redux/services/classApi';
+import { useGetNoticeQuery, useAddNoticeMutation } from '../redux/services/noticeApi';
 
 const Notice = () => {
-  const [notices, setNotices] = useState([]);
-  const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
   const [showNoticeForm, setShowNoticeForm] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState(null)
@@ -16,32 +15,21 @@ const Notice = () => {
     status: ""
   });
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
+  const schoolId = localStorage.getItem("schoolId");
 
-  const fetchNotices = async (classId) => {
-    setSelectedClassId(classId);
-    if (!classId) {
-      setNotices([]);
-      return;
-    }
-    try {
-      const data = await apiService.getNotice({ classId });
-      setNotices(Array.isArray(data) ? data : (data.data || []));
-    } catch (error) {
-      console.error("Error fetching notices:", error);
-    }
-  };
+  const {data: classes = []} = useGetClassesQuery(schoolId);
+  const {data: response} = useGetNoticeQuery(schoolId);
+  const notices = response?.data || [];
+  const [addNotice] = useAddNoticeMutation();
 
-  const fetchClasses = async () => {
-    try {
-      const data = await apiService.getClasses();
-      setAvailableClasses(Array.isArray(data) ? data : (data.data || []));
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    }
-  };
+  const filteredNotices = selectedClassId
+  ? notices.filter((notice) =>
+      notice.classData?.some(
+        (cls) => cls.classId === selectedClassId
+      )
+    )
+  : notices;
+
 
   const handleChange = (e) => {
     setNoticeForm({
@@ -54,8 +42,7 @@ const Notice = () => {
     e.preventDefault();
     try {
       console.log("Submitting notice:", noticeForm);
-      await apiService.addNotice(noticeForm);
-      fetchNotices(selectedClassId || (noticeForm.classId.length > 0 ? noticeForm.classId[0] : ""));
+      await addNotice({...noticeForm, schoolId});
       setNoticeForm({ title: "", message: "", classId: [], status: "" });
       setShowNoticeForm(false);
     } catch (error) {
@@ -78,11 +65,11 @@ const Notice = () => {
         <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <select
             value={selectedClassId}
-            onChange={(e) => fetchNotices(e.target.value)}
+            onChange={(e) => setSelectedClassId(e.target.value)}
             className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
           >
             <option value="" disabled>Select a Class to view notice</option>
-            {availableClasses.map((cls, index) => (
+            {classes.map((cls, index) => (
               <option key={index} value={cls._id || cls.id}>
                 {cls.className || cls.name}
               </option>
@@ -99,8 +86,8 @@ const Notice = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {notices.length > 0 ? (
-          notices.map((notice, index) => (
+        {filteredNotices.length > 0 ? (
+          filteredNotices.map((notice, index) => (
             <div key={index} className="bg-white p-6 rounded-[20px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-md transition-shadow flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4 gap-4">
@@ -177,8 +164,8 @@ const Notice = () => {
                   <Select
                     isMulti
                     name="classId"
-                    options={availableClasses.map(cls => ({ value: cls._id || cls.id, label: cls.className || cls.name }))}
-                    value={availableClasses
+                    options={classes.map(cls => ({ value: cls._id || cls.id, label: cls.className || cls.name }))}
+                    value={classes
                       .filter(cls => noticeForm.classId.includes(cls._id || cls.id))
                       .map(cls => ({ value: cls._id || cls.id, label: cls.className || cls.name }))}
                     onChange={(selectedOptions) => {

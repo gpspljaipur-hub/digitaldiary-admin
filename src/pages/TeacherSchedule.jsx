@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useGetClassesQuery } from "../redux/services/classApi";
+import { useGetSubjectQuery } from "../redux/services/subjectApi";
+import { useGetTeacherQuery } from "../redux/services/teacherApi";
+import { useGetTeacherScheduleQuery, useAddTeacherScheduleMutation } from "../redux/services/teacherScheduleApi";
 
 const TeacherSchedule = () => {
-    const [schedule, setSchedule] = useState([]);
-    const [Class, setClass] = useState([]);
-    const [teacher, setTeacher] = useState([]);
-    const [subject, setSubject] = useState([]);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [scheduleForm, setScheduleForm] = useState({
         teacherId: "",
@@ -19,50 +18,15 @@ const TeacherSchedule = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    useEffect(()=> {
-        fetchSchedule();
-        fetchClass();
-        fetchTeacher();
-        fetchSubject();
-    }, []);
+    const schoolId = "6a1a97c85db3525d452b63f7";
+    const {data: Class = []} = useGetClassesQuery(schoolId, {skip: !showScheduleForm});
+    const {data: subject = []} = useGetSubjectQuery({classId: scheduleForm.classId, schoolId}, {skip: !scheduleForm.classId})
+    const {data: teacher = []} = useGetTeacherQuery(undefined,{skip: !showScheduleForm});
+    const {data: schedule = []} = useGetTeacherScheduleQuery();
+    const [addTeacherSchedule] = useAddTeacherScheduleMutation();
 
-    const fetchTeacher = async () => {
-        try {
-            const data = await apiService.getTeacher();
-            setTeacher(data || []);
-        } catch (error) {
-            console.log("Error fetching teachers", error);
-        }
-    };
 
-    const fetchSubject = async (classId) => {
-        try {
-            const data = await apiService.getSubjects(classId ? { classId } : {});
-            setSubject(Array.isArray(data) ? data : (data?.data || []));
-        } catch (error) {
-            console.log("Error fetching subjects", error);
-        }
-    };
-
-    const fetchClass = async () => {
-        try{
-            const data = await apiService.getClasses();
-            setClass(data || []);
-        } catch(error){
-            console.log("Error fetching classes", error);
-        }
-    };
-
-    const fetchSchedule = async () =>{
-    try{
-         const data = await apiService.getTeacherSchedule();
-         setSchedule(data || []);
-    } catch(error){
-        console.log("Error fetching teacher schedule", error);
-    }
-    };
-
-     const handleScheduleChange = (e) => {
+    const handleScheduleChange = (e) => {
     setScheduleForm({
       ...scheduleForm,
       [e.target.name]: e.target.value,
@@ -73,9 +37,8 @@ const TeacherSchedule = () => {
      e.preventDefault();
  
      try {
-       await apiService.addTeacherSchedule(scheduleForm);
-       await fetchSchedule();
- 
+       await addTeacherSchedule(scheduleForm).unwrap();
+  
        setScheduleForm({
          teacherId: "",
          subjectId: "",
@@ -221,9 +184,12 @@ const TeacherSchedule = () => {
                     name="classId"
                     value={scheduleForm.classId}
                     onChange={(e) => {
-                       handleScheduleChange(e);
-                       fetchSubject(e.target.value);
-                    }}
+                      setScheduleForm((prev) => ({
+                          ...prev,
+                          classId: e.target.value,
+                          subjectId: ""
+                        })); 
+                       }}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all"
                     required
                   >

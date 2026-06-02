@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState} from "react";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useGetComplaintQuery, useAddComplaintCategoryMutation } from "../redux/services/complaintApi";
 
 const Complain = () => {
-  const [complains, setComplains] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -13,6 +11,11 @@ const Complain = () => {
   const [categoryForm, setCategoryForm] = useState({
     name: "",
   });
+
+  const {data: response, isLoading} = useGetComplaintQuery();
+  const complains = response?.data || [];
+  const [addComplaintCategory] = useAddComplaintCategoryMutation();
+
 
   const handleCategoryChange = (e) => {
     setCategoryForm({
@@ -24,7 +27,7 @@ const Complain = () => {
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiService.addComplaintCategory(categoryForm);
+      await addComplaintCategory(categoryForm);
       setCategoryForm({ name: "" });
       setShowCategoryForm(false);
     } catch (error) {
@@ -45,21 +48,6 @@ const Complain = () => {
     }
   };
 
-  useEffect(() => {
-    fetchComplaint();
-  }, []);
-
-  const fetchComplaint = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.getComplaint();
-      setComplains(response.data || []);
-    } catch (error) {
-      console.error("Error fetching complaint:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const totalPages = Math.ceil(complains.length / itemsPerPage);
   const currentComplaints = complains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -100,6 +88,9 @@ const Complain = () => {
                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Student Name
                 </th>
+                 <th className="px-6 py-4 font-semibold tracking-wide">
+                  Class
+                </th>
                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Category
                 </th>
@@ -112,7 +103,7 @@ const Complain = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
-              {loading ? (
+              {isLoading ? (
                 <tr>
                   <td colSpan="5" className="px-6 py-10 text-center text-gray-500">
                     Loading...
@@ -126,6 +117,9 @@ const Complain = () => {
                     </td>
                     <td className="px-6 py-4 font-medium">
                       {complain.studentName || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 font-medium">
+                      {complain.className || "N/A"}
                     </td>
                     <td className="px-6 py-4 text-gray-600">
                       {complain.categoryName || "N/A"}

@@ -48,7 +48,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
-      {/* Header */}
+     
       <header className="w-full bg-white border-b border-gray-200 px-8 py-3 flex justify-between items-center z-10">
         <div className="flex items-center gap-2 text-[#0A2240]">
           <Landmark size={24} />
@@ -60,10 +60,10 @@ const Login = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+    
       <div className="flex-1 max-w-[1400px] mx-auto w-full flex flex-col lg:flex-row items-center justify-between p-4 lg:px-12 lg:py-4 gap-8">
         
-        {/* Left Side Content */}
+       
         <div className="flex-1 w-full max-w-2xl">
           <div className="inline-flex items-center gap-2 bg-[#F0F5FF] px-3 py-1.5 rounded-full mb-4">
             <div className="w-2 h-2 rounded-full bg-blue-600"></div>
@@ -87,11 +87,11 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Right Side Form */}
+  
         <div className="w-full max-w-[440px] lg:mt-0 mt-6">
           <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 relative overflow-hidden">
             
-            {/* Background Shield Icon Accent */}
+         
             <div className="absolute top-6 right-6 text-gray-100">
               <Shield size={80} strokeWidth={1} />
             </div>
@@ -119,7 +119,7 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Password Input */}
+               
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <label className="block text-sm font-semibold text-gray-700">Password</label>
@@ -160,7 +160,7 @@ const Login = () => {
                 </div>
                 
 
-                {/* Submit Button */}
+               
                 <button
                   type="submit"
                   disabled={loading}
@@ -172,7 +172,7 @@ const Login = () => {
               </form>
             </div>
 
-            {/* Footer Security Icons */}
+     
             <div className="mt-6 pt-5 border-t border-gray-100 flex flex-col items-center gap-3">
               <span className="text-[11px] font-semibold text-gray-500 tracking-wide uppercase">Secured with AES-256 Encryption</span>
               <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Footer */}
+  
       <footer className="w-full text-center py-4 mt-auto border-t border-gray-200">
         <p className="text-xs font-semibold text-gray-500 tracking-wide">
           © 2024 Punjab Education Department. Secure Government Portal. Powered by Optatech Innovations

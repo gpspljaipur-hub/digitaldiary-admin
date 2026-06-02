@@ -1,67 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { apiService } from '../config/apiService';
+import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import Pagination from "../components/Pagination";
-
+import { useGetTeacherQuery } from '../redux/services/teacherApi';
+import { useGetLeaveQuery } from '../redux/services/leaveApi';
 const Leave = () => {
-  const [leaves, setLeaves] = useState([]);
-  const [teacher, setTeacher] = useState([]);
-  const [student, setStudent] = useState([]);
   const [selectedTeacherId, setSelectedTeacherId] = useState("");
-  const [selectedStudentId, setSelectedStudentId] = useState("");
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchTeacher();
-  }, []);
+  const {data: teacher = []} = useGetTeacherQuery();
+  const {data: response} = useGetLeaveQuery({teacherId : selectedTeacherId},{skip: !selectedTeacherId});
 
-  const fetchTeacher = async () => {
-    try {
-      const data = await apiService.getTeacher();
-      setTeacher(data || []);
-    } catch (error) {
-      console.log("Error fetching teachers", error);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedTeacherId) {
-      fetchStudents(selectedTeacherId);
-    } else {
-      setStudent([]);
-      setSelectedStudentId("");
-      setLeaves([]);
-    }
-  }, [selectedTeacherId]);
-
-  const fetchStudents = async (teacherId) => {
-    try {
-      const data = await apiService.getStudents({ teacherId });
-      setStudent(data || []);
-    } catch (error) {
-      console.log("Error fetching students", error);
-      setStudent([]);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedStudentId) {
-      fetchLeaves(selectedStudentId);
-    } else {
-      setLeaves([]);
-    }
-  }, [selectedStudentId]);
-
-  const fetchLeaves = async (studentId) => {
-    try {
-      let data = await apiService.getLeave({ studentId });
-      setLeaves(data || []);
-    } catch (error) {
-      console.log("Error fetching leaves", error);
-    }
-  };
+  const leaves = response?.data || [];
 
    const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
@@ -100,19 +51,6 @@ const Leave = () => {
             {teacher && teacher.map((t, index) => (
               <option key={t._id || index} value={t._id || t.id}>
                 {t.name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedStudentId}
-            onChange={(e) => setSelectedStudentId(e.target.value)}
-            className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px] disabled:opacity-50 disabled:bg-gray-50"
-            disabled={!selectedTeacherId}
-          >
-            <option value="" disabled>Select Student</option>
-            {student && student.map((s, index) => (
-              <option key={s._id || index} value={s._id || s.id}>
-                {s.name}
               </option>
             ))}
           </select>

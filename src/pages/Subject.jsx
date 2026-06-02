@@ -1,47 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useGetClassesQuery } from "../redux/services/classApi";
+import { useGetSubjectQuery, useAddSubjectMutation } from "../redux/services/subjectApi";
 
 const Subject = () => {
-  const [subjects, setSubjects] = useState([]);
   const [showSubjectForm, setShowSubjectForm] = useState(false);
   const [subjectForm, setSubjectForm] = useState({
     name: "",
     classId: "",
   });
 
-  const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
+  const schoolId = "6a1a97c85db3525d452b63f7";
 
-  const fetchSubjects = async (classId) => {
-    setSelectedClassId(classId);
-    if (!classId) {
-      setSubjects([]);
-      return;
-    }
-    try {
-      const data = await apiService.getSubjects({ classId });
-      setSubjects(Array.isArray(data) ? data : (data.data || []));
-    } catch (error) {
-      console.error("Error fetching subjects:", error);
-    }
-  };
+const {
+  data: subject = [],
+  isLoading,
+  error,
+} = useGetSubjectQuery({
+  classId: selectedClassId,
+  schoolId,
+},  {
+    skip: !selectedClassId,
+  });
 
-  const fetchClasses = async () => {
-    try {
-      const data = await apiService.getClasses();
-      setAvailableClasses(data);
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    }
-  };
+const {
+  data: classes = [],
+} = useGetClassesQuery(schoolId);
+
+const [addSubject] =
+   useAddSubjectMutation();
 
   const handleSubjectChange = (e) => {
     setSubjectForm({
@@ -54,10 +46,7 @@ const Subject = () => {
     e.preventDefault();
 
     try {
-      await apiService.addSubject(subjectForm);
-      if (selectedClassId === subjectForm.classId || !selectedClassId) {
-        fetchSubjects(subjectForm.classId);
-      }
+        await addSubject({ ...subjectForm,schoolId,}).unwrap();
       setSubjectForm({
         name: "",
         classId: "",
@@ -68,8 +57,8 @@ const Subject = () => {
     }
   };
 
-  const totalPages = Math.max(1,Math.ceil(subjects.length/itemsPerPage));
-  const currentSubjects = subjects.slice((currentPage-1)*itemsPerPage,currentPage * itemsPerPage)
+ const totalPages = Math.max( 1, Math.ceil(subject.length / itemsPerPage));
+ const currentSubjects = subject.slice( (currentPage - 1) * itemsPerPage,currentPage * itemsPerPage);
 
   return (
     <div className="w-full h-full p-2 relative">
@@ -85,11 +74,11 @@ const Subject = () => {
         <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <select 
             value={selectedClassId}
-            onChange={(e) => fetchSubjects(e.target.value)}
+            onChange={(e) => {setSelectedClassId(e.target.value); setCurrentPage(1);}}
             className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
           >
             <option value="">Select a Class to View</option>
-            {availableClasses.map((cls, index) => (
+            {classes.map((cls, index) => (
               <option key={index} value={cls._id || cls.id}>
                 {cls.className || cls.name}
               </option>
@@ -197,7 +186,7 @@ const Subject = () => {
                     required
                   >
                     <option value="" disabled>Select a Class</option>
-                    {availableClasses.map((cls, index) => (
+                    {classes.map((cls, index) => (
                       <option key={index} value={cls._id || cls.id}>
                         {cls.className || cls.name}
                       </option>

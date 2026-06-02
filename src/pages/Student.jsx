@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useGetClassesQuery } from "../redux/services/classApi";
+import { useGetStudentQuery, useAddStudentMutation } from "../redux/services/studentApi";
+import { useGetTeacherQuery } from "../redux/services/teacherApi";
 
 const Student = () => {
-    const [students, setStudents] = useState([]);
-    const [teachers, setTeachers] = useState([]);
-    const [classes, setClasses] = useState([]);
-    const [selectedTeacher, setSelectedTeacher] = useState("");
+    const [selectedClass, setSelectedClass] = useState("");
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -19,49 +18,16 @@ const Student = () => {
         classId: ""
     });
 
-    useEffect(() => {
-        fetchTeachers();
-        fetchClasses();
-    }, []);
+    const schoolId = localStorage.getItem("schoolId");
 
-    const fetchTeachers = async () => {
-        try {
-            const data = await apiService.getTeacher();
-            setTeachers(data || []);
-        } catch (error) {
-            console.log("Error fetching teachers", error);
-        }
-    };
+    const {data: classes = []} = useGetClassesQuery(schoolId);
+    const {data: students = []} = useGetStudentQuery({schoolId, classId: selectedClass}, {skip: !selectedClass});
+    const [addStudent] = useAddStudentMutation();
+    const {data: teachers = []} = useGetTeacherQuery();
+   
+    
 
-    const fetchClasses = async () => {
-        try {
-            const data = await apiService.getClasses();
-            setClasses(data || []);
-        } catch (error) {
-            console.log("Error fetching classes", error);
-        }
-    };
-
-    useEffect(() => {
-        if (selectedTeacher) {
-            fetchStudents();
-        }
-    }, [selectedTeacher]);
-
-    const fetchStudents = async () => {
-        if (!selectedTeacher) return;
-        
-        try {
-            setLoading(true);
-            const response = await apiService.getStudents({ teacherId: selectedTeacher });
-            setStudents(response);
-        } catch (error) {
-            console.error("Error fetching students", error);
-            setStudents([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    
 
     const handleStudentChange = (e) => {
         setStudentForm({ ...studentForm, [e.target.name]: e.target.value });
@@ -70,25 +36,13 @@ const Student = () => {
     const handleStudentSubmit = async (e) => {
         e.preventDefault();
         try {
-            let schoolId = localStorage.getItem('schoolId');
-            if (!schoolId || schoolId === 'undefined' || schoolId === 'null') {
-                try {
-                    const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-                    schoolId = adminData?.schoolId?._id || adminData?.schoolId || null;
-                } catch (err) {
-                    schoolId = null;
-                }
-            }
-
+            
             const payload = {
                 ...studentForm,
                 schoolId
             };
 
-            await apiService.addStudent(payload);
-            if (selectedTeacher === studentForm.teacherId) {
-                fetchStudents();
-            }
+            await addStudent(payload);
             setStudentForm({ name: "", teacherId: "", classId: "" });
             setShowStudentForm(false);
         } catch (error) {
@@ -111,14 +65,14 @@ const Student = () => {
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4">
                 <select 
-                    value={selectedTeacher}
-                    onChange={(e) => setSelectedTeacher(e.target.value)}
+                    value={selectedClass}
+                    onChange={(e) => setSelectedClass(e.target.value)}
                     className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
                 >
-                    <option value="" disabled>Select Teacher to View Students</option>
-                    {teachers.map((teacher) => (
-                        <option key={teacher._id} value={teacher._id}>
-                            {teacher.name}
+                    <option value="" disabled>Select Class</option>
+                    {classes.map((c) => (
+                        <option key={c._id} value={c._id}>
+                            {c.name}
                         </option>
                     ))}
                 </select>

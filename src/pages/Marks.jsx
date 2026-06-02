@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { apiService } from "../config/apiService";
 import Pagination from "../components/Pagination";
+import { useGetMarksQuery } from "../redux/services/marksApi";
+import { useGetClassesQuery } from "../redux/services/classApi";
 
 const Marks = () => {
-  const [marksList, setMarksList] = useState([]);
-  const [availableClasses, setAvailableClasses] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
+  const schoolId = "6a1a97c85db3525d452b63f7"
+  const {data : availableClasses = []} = useGetClassesQuery(schoolId);
+  const {data : marksList = []} = useGetMarksQuery({schoolId, classId: selectedClassId}, {skip: !selectedClassId});
 
-  const fetchClasses = async () => {
-         try {
-             const data = await apiService.getClasses();
-             setAvailableClasses(data || []);
-         } catch (error) {
-             console.log("Error fetching classes", error);
-         }
-     };
 
   const fetchMarks = async (classId) => {
     setSelectedClassId(classId);
@@ -51,10 +43,10 @@ const Marks = () => {
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               <select
                 value={selectedClassId}
-                onChange={(e) => fetchMarks(e.target.value)}
+                onChange={(e) => setSelectedClassId(e.target.value)}
                 className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
               >
-                <option value="" disabled>Select a Class to view marks</option>
+                <option value="" disabled>Select Class</option>
                 {availableClasses.map((cls, index) => (
                   <option key={index} value={cls._id || cls.id}>
                     {cls.className || cls.name}

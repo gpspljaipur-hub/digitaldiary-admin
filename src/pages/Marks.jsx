@@ -1,14 +1,35 @@
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
+import { apiService } from "../config/apiService";
+import Pagination from "../components/Pagination";
 import { useGetMarksQuery } from "../redux/services/marksApi";
 import { useGetClassesQuery } from "../redux/services/classApi";
 
 const Marks = () => {
   const [selectedClassId, setSelectedClassId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const schoolId = "6a1a97c85db3525d452b63f7"
   const {data : availableClasses = []} = useGetClassesQuery(schoolId);
   const {data : marksList = []} = useGetMarksQuery({schoolId, classId: selectedClassId}, {skip: !selectedClassId});
 
+
+  const fetchMarks = async (classId) => {
+    setSelectedClassId(classId);
+    if (!classId) {
+      setMarksList([]);
+      return;
+    }
+    try {
+      const data = await apiService.getMarks({ classId });
+      setMarksList(Array.isArray(data) ? data : (data.data || []));
+    } catch (error) {
+      console.error("Error fetching marks:", error);
+    }
+  };
+
+  const totalPages = Math.max(1, Math.ceil(marksList.length / itemsPerPage));
+  const currentMarks = marksList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="w-full h-full p-2 relative">
@@ -63,11 +84,11 @@ const Marks = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-[#374151]">
-                        {marksList.length > 0 ? (
-                          marksList.map((mark, index) => (
+                        {currentMarks.length > 0 ? (
+                          currentMarks.map((mark, index) => (
                             <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                               <td className="px-6 py-4 font-medium text-gray-900">
-                                {index + 1}
+                                {(currentPage - 1) * itemsPerPage + index + 1}
                               </td>
                               <td className="px-6 py-4 font-medium">
                                 {mark.studentName || "N/A"}
@@ -95,6 +116,14 @@ const Marks = () => {
                         )}
                     </tbody>
                 </table>
+            </div>
+            <div className="p-6 border-t border-gray-100 flex justify-end">
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    alwaysShow={true}
+                />
             </div>
         </div>
     </div>

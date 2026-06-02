@@ -1,5 +1,9 @@
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { 
+  LayoutDashboard, Building2, UserCog, Users, Library, 
+  BookOpen, Bell, AlertCircle, CalendarOff, GraduationCap, 
+  BookText, Award, UserCheck, CalendarClock, FileEdit 
+} from "lucide-react";
 const Sidebar = () => {
 
   const navigate = useNavigate();
@@ -10,27 +14,25 @@ const Sidebar = () => {
   const role = localStorage.getItem("role");
 
   const superAdminMenu = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "school-management", label: "Schools" },
-    { id: "admin", label: "Admin" },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "school-management", label: "Schools", icon: Building2 },
+    { id: "admin", label: "Admin", icon: UserCog },
   ];
 
   const schoolAdminMenu = [
-    { id: "home", label: "Dashboard" },
-    { id: "teacher", label: "Teacher" },
-    { id: "class", label: "Classes" },
-    { id: "subject", label: "Subject" },
-    { id: "notice", label: "Notices" },
-    { id: "complaint", label: "Complaint" },
-    { id: "leave", label: "Leave" },
-    { id: "student", label: "Student" },
-    { id: "homework", label: "Homework" },
-    { id: "marks", label: "Marks" },
-    { id: "attendance", label: "Attendance" },
-    { id: "teacher-schedule", label: "Teacher Schedule" },
-    { id: "exam-type", label: "Exam Type" },
-
-
+    { id: "home", label: "Dashboard", icon: LayoutDashboard },
+    { id: "teacher", label: "Teacher", icon: Users },
+    { id: "class", label: "Classes", icon: Library },
+    { id: "subject", label: "Subject", icon: BookOpen },
+    { id: "notice", label: "Notices", icon: Bell },
+    { id: "complaint", label: "Complaint", icon: AlertCircle },
+    { id: "leave", label: "Leave", icon: CalendarOff },
+    { id: "student", label: "Student", icon: GraduationCap },
+    { id: "homework", label: "Homework", icon: BookText },
+    { id: "marks", label: "Marks", icon: Award },
+    { id: "attendance", label: "Attendance", icon: UserCheck },
+    { id: "teacher-schedule", label: "Teacher Schedule", icon: CalendarClock },
+    { id: "exam-type", label: "Exam Type", icon: FileEdit },
   ];
 
   const menuItems =
@@ -71,16 +73,19 @@ const Sidebar = () => {
 
           const isActive = activeTab === item.id;
 
+          const Icon = item.icon;
+
           return (
             <button
               key={item.id}
               onClick={() => navigate(`/${item.id}`)}
-              className={`text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+              className={`text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-3 ${
                 isActive
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-600 hover:bg-[#112443] hover:text-white"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                  : "text-gray-300 hover:bg-[#112443] hover:text-white"
               }`}
             >
+              <Icon size={20} className={isActive ? "text-white" : "text-gray-400"} />
               {item.label}
             </button>
           );

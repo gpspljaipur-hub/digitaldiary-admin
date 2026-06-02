@@ -165,6 +165,7 @@ const Complain = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
+              alwaysShow={true}
             />
           </div>
         )}

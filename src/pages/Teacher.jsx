@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { addTeacher } from "../config/apiService";
-import { apiService } from "../config/apiService";
 import Select from "react-select";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
-
+import { useGetClassesQuery } from "../redux/services/classApi";
+import { useGetSubjectQuery} from "../redux/services/subjectApi";
+import { useGetTeacherQuery, useAddTeacherMutation } from "../redux/services/teacherApi";
 const Teacher = () => {
-  const [teachers, setTeachers] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [subject, setSubject] = useState([]);
   const [showTeacherForm, setShowTeacherForm] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -22,41 +19,43 @@ const Teacher = () => {
     subjectIds: [],
   });
 
-  useEffect(() => {
-    fetchTeacher();
-    fetchClasses();
-  }, []);
+  const schoolId = localStorage.getItem("schoolId");
 
-  const fetchClasses = async () => {
-    try {
-      const data = await apiService.getClasses();
-      setClasses(data);
-    } catch (error) {
-      console.log("Error fetching classes", error);
-    }
-  };
+  const {data: classes = []} = useGetClassesQuery(schoolId, {skip: !showTeacherForm});
+  const {data: subject = []} = useGetSubjectQuery({schoolId}, {
+    skip: !teacherForm.classIds.length,
+  });
+  const {data: teachers = []} = useGetTeacherQuery();
+  const [addTeacher] = useAddTeacherMutation();
 
-  const fetchSubject = async (classId) => {
-    if (!classId) {
-      setSubject([]);
-      return;
-    }
-    try {
-      const data = await apiService.getSubjects({ classId });
-      setSubject(Array.isArray(data) ? data : (data?.data || []));
-    } catch (error) {
-      console.log("Error fetching subjects", error);
-    }
-  };
+ const filteredSubjects = [
+  ...new Map(
+    subject
+      .filter((sub) =>
+        teacherForm.classIds.includes(sub.classId?._id)
+      )
+      .map((sub) => [sub.name.toLowerCase(), sub])
+  ).values(),
+];
 
-  const fetchTeacher = async () => {
-    try {
-      const data = await apiService.getTeacher();
-      setTeachers(data);
-    } catch (error) {
-      console.error("Error fetching teachers:", error);
+useEffect(() => {
+  setTeacherForm((prev) => {
+    const validSubjectIds = prev.subjectIds.filter((subjectId) =>
+      filteredSubjects.some((sub) => sub._id === subjectId)
+    );
+
+    if (
+      validSubjectIds.length === prev.subjectIds.length
+    ) {
+      return prev;
     }
-  };
+
+    return {
+      ...prev,
+      subjectIds: validSubjectIds,
+    };
+  });
+}, [teacherForm.classIds]);
 
   const handleChange = (e) => {
     setTeacherForm({
@@ -66,54 +65,41 @@ const Teacher = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  e.preventDefault();
+
+  try {
+
     setLoading(true);
 
-    try {
-      let schoolId = localStorage.getItem('schoolId');
-      if (!schoolId || schoolId === 'undefined' || schoolId === 'null') {
-        try {
-          const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-          schoolId = adminData?.schoolId?._id || adminData?.schoolId || null;
-        } catch (e) {
-          schoolId = null;
-        }
-      }
+    const payload = {
+      name: teacherForm.name,
+      email: teacherForm.email,
+      password: teacherForm.password,
+      classIds: teacherForm.classIds,
+      subjectIds: teacherForm.subjectIds,
+      schoolId,
+    };
 
-      const payload = {
-        name: teacherForm.name,
-        email: teacherForm.email,
-        password: teacherForm.password,
-        classIds: teacherForm.classIds,
-        subjectIds: teacherForm.subjectIds,
-        schoolId: schoolId,
-      };
+    const response = await addTeacher(payload).unwrap();
+    alert("Teacher added successfully!");
 
-      const response = await addTeacher(payload);
+    setTeacherForm({
+      name: "",
+      email: "",
+      password: "",
+      classIds: [],
+      subjectIds: [],
+    });
 
-      if (response?.success || response?.message || response?._id || response) {
-        alert("Teacher added successfully!");
-        await fetchTeacher();
+    setShowTeacherForm(false);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-        setTeacherForm({
-          name: "",
-          email: "",
-          password: "",
-          classIds: [],
-          subjectIds: []
-        });
-
-        setShowTeacherForm(false);
-      } else {
-        alert(response?.message || 'Failed to add teacher');
-      }
-    } catch (error) {
-      console.error("Add teacher error:", error);
-      alert(error.response?.data?.message || 'Failed to add teacher. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const totalPages = Math.max(1, Math.ceil(teachers.length / itemsPerPage));
   const currentTeachers = teachers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -297,17 +283,10 @@ const Teacher = () => {
                       ? selectedOptions.map((option) => option.value)
                       : [];
 
-                    setTeacherForm({
-                      ...teacherForm,
-                      classIds: selectedClassIds,
-                      subjectIds: [],
-                    });
-
-                    if (selectedClassIds.length > 0) {
-                      fetchSubject(selectedClassIds[0]);
-                    } else {
-                      setSubject([]);
-                    }
+                    setTeacherForm((prev) => ({
+                        ...prev,
+                        classIds: selectedClassIds,
+                    }));
                   }}
 
                   styles={{
@@ -333,20 +312,20 @@ const Teacher = () => {
 
                 <Select
                   isMulti
-                  options={subject.map((s) => ({
-                    value: s._id || s.id,
-                    label: s.name || s.subjectName,
+                  options={filteredSubjects.map((s) => ({
+                    value: s._id,
+                    label: s.name,
                   }))}
 
-                  value={subject
-                    .filter((s) =>
-                      teacherForm.subjectIds.includes(s._id || s.id)
-                    )
-                    .map((s) => ({
-                      value: s._id || s.id,
-                      label: s.name || s.subjectName,
-                    }))
-                  }
+                 value={filteredSubjects
+                  .filter((s) =>
+                    teacherForm.subjectIds.includes(s._id)
+                  )
+                  .map((s) => ({
+                    value: s._id,
+                    label: s.name,
+                  }))
+                }
 
                   onChange={(selectedOptions) => {
                     setTeacherForm({

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAddClassMutation, useGetClassesQuery } from "../redux/services/api";
+import { useAddClassMutation, useGetClassesQuery } from "../redux/services/classApi";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
 
@@ -11,7 +11,7 @@ const Class = () => {
     name: "",
   });
 
-  const schoolId = localStorage.getItem("schoolId");
+  const schoolId = "6a1a97c85db3525d452b63f7";
 
  const {
   data: response = {},
@@ -135,6 +135,7 @@ const classes = response|| [];
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
+              alwaysShow={true}
             />
           </div>
         )}

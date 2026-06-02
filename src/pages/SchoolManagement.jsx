@@ -14,7 +14,7 @@ const SchoolManagement = () => {
   const fetchSchool = async () => {
     try{
       const res = await apiService.getSchool();
-      setSchools(res || []);
+      setSchools(res?.data || []);
     } catch(error){
       console.log("Error fetching schools",error);
     }

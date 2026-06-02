@@ -50,7 +50,7 @@ const Student = () => {
         }
     };
 
-    
+
     const totalPages = Math.max(1, Math.ceil(students.length / itemsPerPage));
     const currentStudents = students.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -141,7 +141,6 @@ const Student = () => {
                     </tbody>
                 </table>
             </div>
-            
             <div className="p-6 border-t border-gray-100 flex justify-end">
                 <Pagination 
                     currentPage={currentPage}

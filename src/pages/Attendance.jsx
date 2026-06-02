@@ -1,53 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState } from "react";
 import Pagination from "../components/Pagination";
+import { useGetTeacherQuery } from "../redux/services/teacherApi";
+import { useGetAttendanceQuery } from "../redux/services/attendanceApi";
 
 const Attendance = () => {
-    const [teachers, setTeachers] = useState([]);
     const [selectedTeacher, setSelectedTeacher] = useState("");
     const [selectedDate, setSelectedDate] = useState("");
-    const [attendanceRecords, setAttendanceRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    useEffect(() => {
-        fetchTeacher();
-    }, []);
-
-    const fetchTeacher = async () => {
-        try {
-            const data = await apiService.getTeacher();
-            setTeachers(data || []);
-        } catch (error) {
-            console.log("Error fetching teacher", error);
-        }
-    };
-
-   const fetchAttendance = async () => {
-    if (!selectedTeacher || !selectedDate) {
-        alert("Please select both a teacher and a date");
-        return;
-    }
-    try {
-        setLoading(true);
-
-        const [year, month, day] = selectedDate.split("-");
-        
-        const response = await apiService.getAttendance({
-            teacherId: selectedTeacher,
-            date: `${month}/${day}/${year}`
-        });
-
-        setAttendanceRecords(response.data || []);
-
-    } catch (error) {
-        console.error("Error fetching attendance:", error);
-        setAttendanceRecords([]);
-    } finally {
-        setLoading(false);
-    }
-};
+    const {data: response} = useGetAttendanceQuery({teacherId: selectedTeacher, date: selectedDate}, {skip: !selectedTeacher || !selectedDate});
+    const {data: teachers = []} = useGetTeacherQuery();
+    const attendanceRecords = response?.data || [];
 
 const totalPages = Math.max(1, Math.ceil(attendanceRecords.length / itemsPerPage));
 const currentAttendance = attendanceRecords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -81,13 +46,6 @@ const currentAttendance = attendanceRecords.slice((currentPage - 1) * itemsPerPa
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all"
               />
-              <button
-                  onClick={fetchAttendance}
-                  disabled={loading}
-                  className="bg-[#0A1629] hover:bg-[#112443] text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                  {loading ? "Searching..." : "Search"}
-              </button>
           </div>
         </div>
         

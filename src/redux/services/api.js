@@ -1,47 +1,33 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
 
   reducerPath: "api",
 
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://digitaldiry-backend.onrender.com",
+    baseUrl:
+      "https://digitaldiry-backend.onrender.com",
   }),
 
-  tagTypes: ["Classes"],
+  tagTypes: [
+    "Classes",
+    "Subjects",
+    "Teachers",
+    "Notices",
+    "Complaints",
+    "ComplaintsCategory",
+    "Students", 
+    "Leaves",
+    "Homework",
+    "Marks",
+    "Attendance",
+    "ExamType",
+    "TeacherSchedule"
+  ],
 
-  endpoints: (builder) => ({
+  endpoints: () => ({}),
 
-    getClasses: builder.query({
-
-        query: (schoolId) => ({
-          url: "/classes/school-classes",
-
-          method: "POST",
-
-          body: {
-            schoolId,
-          },
-        }),
-
-        providesTags: ["Classes"],
-
-      }),
-
-    addClass: builder.mutation({
-        query: (body) => ({
-            url: "/classes/add",
-            method: "POST",
-            body,
-        }),
-
-        invalidatesTags: ["Classes"]
-    }),
-
-  }),
 });
-
-export const {
-  useGetClassesQuery,
-  useAddClassMutation
-} = api;

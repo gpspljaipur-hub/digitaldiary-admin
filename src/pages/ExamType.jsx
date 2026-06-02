@@ -1,29 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState} from "react";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
+import { useGetExamTypeQuery, useAddExamTypeMutation } from "../redux/services/examTypeApi";
 
 const ExamType = () => {
-  const [exam, setExam] = useState([]);
   const [showExamForm, setShowExamForm] = useState(false);
   const [examForm, setExamForm] = useState({
     name: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  useEffect(() => {
-    fetchExam();
-  }, []);
 
-  const fetchExam = async () => {
-    try {
-      const data = await apiService.getExamType();
-      setExam(data);
-    } catch (error) {
-      console.error("Error fetching exam:", error);
-    }
-  };
-
+  const {data: exam = []} = useGetExamTypeQuery();
+  const [addExamType] = useAddExamTypeMutation();
+  
   const handleExamChange = (e) => {
     setExamForm({
       ...examForm,
@@ -35,9 +25,7 @@ const ExamType = () => {
     e.preventDefault();
 
     try {
-      await apiService.addExamType(examForm);
-      await fetchExam();
-
+      await addExamType(examForm).unwrap();
       setExamForm({
         name: "",
       });

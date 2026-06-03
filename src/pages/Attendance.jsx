@@ -10,8 +10,11 @@ const Attendance = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
+    const schoolId = localStorage.getItem("schoolId");
+
     const {data: response} = useGetAttendanceQuery({teacherId: selectedTeacher, date: selectedDate}, {skip: !selectedTeacher || !selectedDate});
-    const {data: teachers = []} = useGetTeacherQuery();
+    const {data: responses = []} = useGetTeacherQuery(schoolId);
+    const teachers = responses?.data || [];
     const attendanceRecords = response?.data || [];
 
 const totalPages = Math.max(1, Math.ceil(attendanceRecords.length / itemsPerPage));

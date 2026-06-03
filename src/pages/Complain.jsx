@@ -12,7 +12,9 @@ const Complain = () => {
     name: "",
   });
 
-  const {data: response, isLoading} = useGetComplaintQuery();
+  const schoolId = localStorage.getItem("schoolId");
+
+  const {data: response, isLoading} = useGetComplaintQuery(schoolId);
   const complains = response?.data || [];
   const [addComplaintCategory] = useAddComplaintCategoryMutation();
 

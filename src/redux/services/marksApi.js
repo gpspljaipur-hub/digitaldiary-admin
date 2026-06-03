@@ -3,12 +3,13 @@ export const marksApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         getMarks: builder.query({
-            query: ({schoolId, classId}) => ({
+            query: ({schoolId, classId, subjectId}) => ({
                 url: "marks/list",
                 method: "POST",
                 body: {
                     schoolId,
-                    classId
+                    classId,
+                    subjectId
                 },
             }),
             providesTags: ["Marks"],

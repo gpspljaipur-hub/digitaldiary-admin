@@ -23,11 +23,9 @@ const Student = () => {
     const {data: classes = []} = useGetClassesQuery(schoolId);
     const {data: students = []} = useGetStudentQuery({schoolId, classId: selectedClass}, {skip: !selectedClass});
     const [addStudent] = useAddStudentMutation();
-    const {data: teachers = []} = useGetTeacherQuery();
+    const {data: response = []} = useGetTeacherQuery(schoolId, {skip: !showStudentForm});
+    const teachers = response?.data || [];
    
-    
-
-    
 
     const handleStudentChange = (e) => {
         setStudentForm({ ...studentForm, [e.target.name]: e.target.value });

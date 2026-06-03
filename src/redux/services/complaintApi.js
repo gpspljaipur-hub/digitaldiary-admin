@@ -6,8 +6,10 @@ export const complaintApi =
 
       getComplaint: builder.query({
 
-        query: () => ({
-          url: "complaint/list",
+        query: (schoolId) => ({
+          url: "complaint/complaint-by-school",
+          method: "POST",
+          body: {schoolId}
         }),
 
         providesTags: ["Complaints"],

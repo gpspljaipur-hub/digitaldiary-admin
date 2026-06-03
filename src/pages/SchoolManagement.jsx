@@ -1,24 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Plus, Search, Filter, Building2, ChevronDown, Edit2, Trash2, CheckCircle2, ClipboardList, Activity, TrendingUp } from 'lucide-react';
-import { apiService } from '../config/apiService';
+import { useGetSchoolQuery } from '../redux/services/schoolApi';
 
 const SchoolManagement = () => {
   const navigate = useNavigate();
-  const [schools, setSchools] = useState([]);
+  
+  const {data: response = []} = useGetSchoolQuery();
+  const schools = response?.data || [];
 
-  useEffect(()=> {
-   fetchSchool();
-  }, [])
-
-  const fetchSchool = async () => {
-    try{
-      const res = await apiService.getSchool();
-      setSchools(res?.data || []);
-    } catch(error){
-      console.log("Error fetching schools",error);
-    }
-  }
+  
 
   return (
     <div className="w-full h-full -mt-6 p-2">

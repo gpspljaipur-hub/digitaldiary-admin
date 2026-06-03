@@ -15,7 +15,7 @@ const Subject = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const schoolId = "6a1a97c85db3525d452b63f7";
+  const schoolId = localStorage.getItem("schoolId");
 
 const {
   data: subject = [],
@@ -27,6 +27,8 @@ const {
 },  {
     skip: !selectedClassId,
   });
+
+  
 
 const {
   data: classes = [],

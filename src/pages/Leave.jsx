@@ -9,7 +9,10 @@ const Leave = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const {data: teacher = []} = useGetTeacherQuery();
+  const schoolId = localStorage.getItem("schoolId");
+
+  const {data: responses = []} = useGetTeacherQuery(schoolId);
+  const teacher = responses?.data || [];
   const {data: response} = useGetLeaveQuery({teacherId : selectedTeacherId},{skip: !selectedTeacherId});
 
   const leaves = response?.data || [];

@@ -17,6 +17,8 @@ const Teacher = () => {
     password: "",
     classIds: [],
     subjectIds: [],
+    isClassTeacher: "",
+    classTeacherOf: ""
   });
 
   const schoolId = localStorage.getItem("schoolId");
@@ -25,8 +27,9 @@ const Teacher = () => {
   const {data: subject = []} = useGetSubjectQuery({schoolId}, {
     skip: !teacherForm.classIds.length,
   });
-  const {data: teachers = []} = useGetTeacherQuery();
+  const {data: response = []} = useGetTeacherQuery(schoolId);
   const [addTeacher] = useAddTeacherMutation();
+  const teachers = response?.data || [];
 
  const filteredSubjects = [
   ...new Map(
@@ -78,10 +81,13 @@ useEffect(() => {
       password: teacherForm.password,
       classIds: teacherForm.classIds,
       subjectIds: teacherForm.subjectIds,
+      isClassTeacher: teacherForm.isClassTeacher,
+      classTeacherOf: teacherForm.isClassTeacher === "true"
+      ? teacherForm.classTeacherOf: null,
       schoolId,
     };
 
-    const response = await addTeacher(payload).unwrap();
+     await addTeacher(payload).unwrap();
     alert("Teacher added successfully!");
 
     setTeacherForm({
@@ -90,6 +96,8 @@ useEffect(() => {
       password: "",
       classIds: [],
       subjectIds: [],
+      isClassTeacher: "",
+      classTeacherOf: ""
     });
 
     setShowTeacherForm(false);
@@ -139,13 +147,13 @@ useEffect(() => {
                   Name
                 </th>
                 <th className="px-6 py-4 font-semibold tracking-wide">
-                  Email
-                </th>
-                <th className="px-6 py-4 font-semibold tracking-wide">
                   Subjects
                 </th>
                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Classes
+                </th>
+                 <th className="px-6 py-4 font-semibold tracking-wide">
+                  Class Teacher
                 </th>
               </tr>
             </thead>
@@ -159,9 +167,6 @@ useEffect(() => {
                     <td className="px-6 py-4 font-medium text-gray-900">
                       {teacher.name}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {teacher.email}
-                    </td>
                     <td className="px-6 py-4 text-gray-600 max-w-[200px] truncate" title={teacher.subjectIds ? teacher.subjectIds.map((s) => s.name).join(", ") : ""}>
                       {teacher.subjectIds && teacher.subjectIds.length > 0
                         ? teacher.subjectIds.map((s) => s.name).join(", ")
@@ -171,6 +176,9 @@ useEffect(() => {
                       {teacher.classIds && teacher.classIds.length > 0
                         ? teacher.classIds.map((s) => s.name).join(", ")
                         : "—"}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 max-w-[200px] truncate" title={teacher.classIds ? teacher.classIds.map((s) => s.name).join(", ") : ""}>
+                      {teacher.classTeacherOf?.name || "-"}
                     </td>
                   </tr>
                 ))
@@ -354,6 +362,54 @@ useEffect(() => {
                 />
               </div>
 
+              <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      Is Class Teacher
+                    </label>
+
+                    <select
+                      name="isClassTeacher"
+                      value={teacherForm.isClassTeacher}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                    >
+                      <option value="" disabled>Select Option</option>
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                  </div>
+
+                  {teacherForm.isClassTeacher === "true" && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      Class Teacher Of
+                    </label>
+
+                    <select
+                      name="classTeacherOf"
+                      value={teacherForm.classTeacherOf}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                    >
+                      <option value="" >Select Class</option>
+
+                      {classes
+                        .filter((c) =>
+                          teacherForm.classIds.includes(c._id || c.id)
+                        )
+                        .map((c) => (
+                          <option
+                            key={c._id || c.id}
+                            value={c._id || c.id}
+                          >
+                            {c.name || c.className}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                )}
+
               <div className="pt-5 border-t border-gray-100 flex items-center justify-end gap-3">
                 <button
                     type="button"
@@ -367,7 +423,7 @@ useEffect(() => {
                     disabled={loading}
                     className="bg-[#0A1629] hover:bg-[#112443] text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    {loading ? 'Submitting...' : 'Submit'}
+                  {loading ? 'Submitting...' : 'Submit'}
                 </button>
               </div>
             </form>

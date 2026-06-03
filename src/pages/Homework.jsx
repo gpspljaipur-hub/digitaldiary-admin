@@ -10,7 +10,7 @@ const Homework = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const schoolId = "6a1a97c85db3525d452b63f7";
+  const schoolId = localStorage.getItem("schoolId");
 
   const {data: availableClasses = []} = useGetClassesQuery(schoolId);
   const {data: subject = []} = useGetSubjectQuery({classId: selectedClassId, schoolId}, {skip: !selectedClassId});

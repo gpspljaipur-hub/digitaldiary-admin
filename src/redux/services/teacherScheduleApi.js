@@ -6,9 +6,13 @@ export const teacherScheduleApi =
 
       getTeacherSchedule: builder.query({
 
-        query: () => ({
+        query: (schoolId) => ({
 
           url: "teacher-schedule/list",
+          method: "POST",
+          body: {
+            schoolId
+          }
 
         }),
 

@@ -18,11 +18,12 @@ const TeacherSchedule = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    const schoolId = "6a1a97c85db3525d452b63f7";
+    const schoolId = localStorage.getItem("schoolId");
     const {data: Class = []} = useGetClassesQuery(schoolId, {skip: !showScheduleForm});
     const {data: subject = []} = useGetSubjectQuery({classId: scheduleForm.classId, schoolId}, {skip: !scheduleForm.classId})
-    const {data: teacher = []} = useGetTeacherQuery(undefined,{skip: !showScheduleForm});
-    const {data: schedule = []} = useGetTeacherScheduleQuery();
+    const {data: response = []} = useGetTeacherQuery(schoolId,{skip: !showScheduleForm});
+    const teacher = response?.data || [];
+    const {data: schedule = []} = useGetTeacherScheduleQuery(schoolId);
     const [addTeacherSchedule] = useAddTeacherScheduleMutation();
 
 
@@ -37,7 +38,7 @@ const TeacherSchedule = () => {
      e.preventDefault();
  
      try {
-       await addTeacherSchedule(scheduleForm).unwrap();
+       await addTeacherSchedule({...scheduleForm, schoolId}).unwrap();
   
        setScheduleForm({
          teacherId: "",

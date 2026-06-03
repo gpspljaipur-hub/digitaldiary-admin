@@ -2,13 +2,23 @@ import { api} from "./api";
 export const teacherApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
-                getTeacher: builder.query({
+                 getTeacher: builder.query({
 
-                 query: () => "/teachers/all",
+        query: (schoolId) => ({
 
-                  providesTags: ["Teachers"],
+          url: "/teachers/teacher-by-school",
 
-                }),
+          method: "POST",
+
+          body: {
+            schoolId,
+          },
+
+        }),
+
+        providesTags: ["Teachers"],
+
+      }),
 
          addTeacher: builder.mutation({
 

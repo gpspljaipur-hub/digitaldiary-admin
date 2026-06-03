@@ -1,32 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { apiService } from "../config/apiService";
+import React, { useState } from "react";
 import Pagination from "../components/Pagination";
 import { useGetMarksQuery } from "../redux/services/marksApi";
 import { useGetClassesQuery } from "../redux/services/classApi";
+import { useGetSubjectQuery } from "../redux/services/subjectApi";
 
 const Marks = () => {
   const [selectedClassId, setSelectedClassId] = useState("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const schoolId = "6a1a97c85db3525d452b63f7"
+  const schoolId = localStorage.getItem("schoolId");
   const {data : availableClasses = []} = useGetClassesQuery(schoolId);
-  const {data : marksList = []} = useGetMarksQuery({schoolId, classId: selectedClassId}, {skip: !selectedClassId});
+  const {data : response = []} = useGetMarksQuery({schoolId, classId: selectedClassId, subjectId: selectedSubjectId}, {skip: !selectedClassId || !selectedSubjectId});
+  const marksList = response?.data || [];
+  const {data: subjects = []} = useGetSubjectQuery({classId: selectedClassId, schoolId}, {skip: !selectedClassId});
 
-
-  const fetchMarks = async (classId) => {
-    setSelectedClassId(classId);
-    if (!classId) {
-      setMarksList([]);
-      return;
-    }
-    try {
-      const data = await apiService.getMarks({ classId });
-      setMarksList(Array.isArray(data) ? data : (data.data || []));
-    } catch (error) {
-      console.error("Error fetching marks:", error);
-    }
-  };
 
   const totalPages = Math.max(1, Math.ceil(marksList.length / itemsPerPage));
   const currentMarks = marksList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -43,13 +32,34 @@ const Marks = () => {
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               <select
                 value={selectedClassId}
-                onChange={(e) => setSelectedClassId(e.target.value)}
+                onChange={(e) => {
+                  setSelectedClassId(e.target.value);
+                  setSelectedSubjectId("");
+                  setCurrentPage(1);
+                }}
                 className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
               >
                 <option value="" disabled>Select Class</option>
                 {availableClasses.map((cls, index) => (
                   <option key={index} value={cls._id || cls.id}>
                     {cls.className || cls.name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedSubjectId}
+                onChange={(e) => {
+                  setSelectedSubjectId(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
+                disabled={!selectedClassId}
+              >
+                <option value="">All Subjects</option>
+                {subjects.map((sub, index) => (
+                  <option key={index} value={sub._id || sub.id}>
+                    {sub.name || sub.subjectName}
                   </option>
                 ))}
               </select>

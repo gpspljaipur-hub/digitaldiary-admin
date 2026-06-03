@@ -23,11 +23,9 @@ const Student = () => {
     const {data: classes = []} = useGetClassesQuery(schoolId);
     const {data: students = []} = useGetStudentQuery({schoolId, classId: selectedClass}, {skip: !selectedClass});
     const [addStudent] = useAddStudentMutation();
-    const {data: teachers = []} = useGetTeacherQuery();
+    const {data: response = []} = useGetTeacherQuery(schoolId, {skip: !showStudentForm});
+    const teachers = response?.data || [];
    
-    
-
-    
 
     const handleStudentChange = (e) => {
         setStudentForm({ ...studentForm, [e.target.name]: e.target.value });
@@ -50,7 +48,7 @@ const Student = () => {
         }
     };
 
-    
+
     const totalPages = Math.max(1, Math.ceil(students.length / itemsPerPage));
     const currentStudents = students.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -141,7 +139,6 @@ const Student = () => {
                     </tbody>
                 </table>
             </div>
-            
             <div className="p-6 border-t border-gray-100 flex justify-end">
                 <Pagination 
                     currentPage={currentPage}

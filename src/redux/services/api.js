@@ -25,7 +25,8 @@ export const api = createApi({
     "Marks",
     "Attendance",
     "ExamType",
-    "TeacherSchedule"
+    "TeacherSchedule",
+    "Schools"
   ],
 
   endpoints: () => ({}),

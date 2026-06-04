@@ -13,38 +13,39 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (mobileNumber.trim() !== '' && password.trim() !== '') {
-      try {
-        setLoading(true);
-        const response = await loginUser({ mobile: mobileNumber, password });
-        
-        if (response?.success) {
-          if (response.token) {
-            localStorage.setItem('token', response.token);
-          }
-          if (response.data) {
-            localStorage.setItem('adminData', JSON.stringify(response.data));
-          }
-          
-          const schoolId = response.data?.schoolId?._id || response.data?.schoolId;
-          if (schoolId) {
-            localStorage.setItem('schoolId', schoolId);
-          }
-          
-          navigate('/dashboard');
-        } else {
-          alert(response?.message || 'Login failed');
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        alert(error.response?.data?.message || 'Failed to login. Please check your credentials.');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      alert("Please enter credentials.");
+
+    if (mobileNumber.length !== 10) {
+      alert("Please enter a valid 10-digit mobile number");
+      return;
     }
-  };
+
+    try {
+      setLoading(true);
+      const res = await loginUser({ mobile: mobileNumber, password });
+
+      if (res?.token) {
+        localStorage.setItem("token", res.token);
+        if (res?.admin) {
+          localStorage.setItem("adminData", JSON.stringify(res.admin));
+        }
+        alert("Login Successful!");
+        
+        const role = localStorage.getItem("role");
+        if (role === "super_admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/home");
+        }
+      } else {
+        alert(res?.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(error.response?.data?.message || "Failed to login. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
@@ -101,7 +102,7 @@ const Login = () => {
               <p className="text-gray-500 text-sm mb-6">Access your administrative dashboard</p>
 
               <form onSubmit={handleLogin} className="space-y-4">
-                {/* Email Input */}
+                  
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
                   <div className="relative flex items-center">
@@ -110,13 +111,14 @@ const Login = () => {
                     </div>
                     <input
                       type="text"
+                      maxLength={10}
                       className="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400 font-medium text-gray-900"
                       placeholder="Enter your mobile number"
                       value={mobileNumber}
-                      onChange={(e) => setMobileNumber(e.target.value)}
+                      onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
                       required
                     />
-                  </div>
+                  </div>  
                 </div>
 
                
@@ -184,10 +186,6 @@ const Login = () => {
                 </div>
               </div>
             </div>
-
-
-           
-
           </div>
         </div>
       </div>

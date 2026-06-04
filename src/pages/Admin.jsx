@@ -5,9 +5,9 @@ import Pagination from "../components/Pagination";
 const Admin = () => {
     const [admins, setAdmins] = useState([
         {
-            name: "John Doe",
-            email: "john.doe@example.com",
-            phone: "123-456-7890",
+            name: "sidesh saini",
+            email: "sideshsaini@gmail.com",
+            phone: "9923901234",
             school: "SVVM School"
         }
     ]);
@@ -29,9 +29,8 @@ const Admin = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add new admin to the list
+    
         setAdmins([...admins, formData]);
-        // Reset form and close modal
         setFormData({ name: "", email: "", phone: "", school: "" });
         setIsModalOpen(false);
     };

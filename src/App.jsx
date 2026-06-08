@@ -25,7 +25,7 @@ import Marks from './pages/Marks'
 import Attendance from './pages/Attendance'
 import ExamType from './pages/ExamType'
 import Admin from './pages/Admin'
-
+import TimeTable from './pages/TimeTable'
 
 
 const App = () => {
@@ -58,6 +58,7 @@ const App = () => {
           <Route path='/school-management' element={<SchoolManagement />} />
           <Route path="/school-registration" element={<SchoolRegistration />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/time-table" element={<TimeTable/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

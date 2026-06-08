@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Grid, LogOut } from 'lucide-react';
+import { Search, Bell, Grid, LogOut, Menu } from 'lucide-react';
 
-const Header = () => {
+const Header = ({ toggleSidebar, showSidebarToggle }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,6 +16,15 @@ const Header = () => {
       
     
       <div className="flex items-center gap-3">
+        {showSidebarToggle && (
+          <button 
+            onClick={toggleSidebar} 
+            className="p-2 -ml-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none"
+            aria-label="Toggle Menu"
+          >
+            <Menu size={24} strokeWidth={2.5} />
+          </button>
+        )}
         <h1 className="text-[22px] font-bold text-[#0A1629] tracking-tight whitespace-nowrap">
           DSDS Education Administration
         </h1>

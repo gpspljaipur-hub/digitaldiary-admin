@@ -1,32 +1,32 @@
 import { api } from "./api";
-export const examTypeApi =
+export const timeTableApi =
   api.injectEndpoints({
     endpoints: (builder) => ({
-      getExamType: builder.query({
+      getTimeTable: builder.query({
         query: ({ schoolId, classId }) => ({
-          url: "examType/schedule/list",
+          url: "class-timetable/list",
           method: "POST",
           body: {
             schoolId,
             classId
           }
         }),
-        providesTags: ["ExamType"],
+        providesTags: ["TimeTable"],
       }),
 
 
-      addExamType: builder.mutation({
+      addTimeTable: builder.mutation({
         query: (body) => ({
-          url: "/examType/schedule/add",
+          url: "class-timetable/add",
           method: "POST",
           body,
         }),
-        invalidatesTags: ["ExamType"],
+        invalidatesTags: ["TimeTable"],
       }),
     }),
   });
 
 export const {
-  useGetExamTypeQuery,
-  useAddExamTypeMutation,
-} = examTypeApi;
+  useGetTimeTableQuery,
+  useAddTimeTableMutation,
+} = timeTableApi;

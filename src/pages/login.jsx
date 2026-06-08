@@ -11,6 +11,17 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const handleNaviagte = () => {
+    const role = localStorage.getItem("role");
+    if(role === "school_admin"){
+      console.log("Home");
+      navigate("/home");
+    } else{
+      console.log("Dashboard");
+      navigate("/dashboard");
+    }
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (mobileNumber.trim() !== '' && password.trim() !== '') {
@@ -31,7 +42,6 @@ const Login = () => {
             localStorage.setItem('schoolId', schoolId);
           }
           
-          navigate('/dashboard');
         } else {
           alert(response?.message || 'Login failed');
         }
@@ -164,6 +174,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
+                  onClick={handleNaviagte}
                   className="w-full py-3.5 bg-[#091F3C] hover:bg-[#112d54] text-white rounded-xl text-[15px] font-bold transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-[#091F3C]/20 active:scale-[0.98]"
                 >
                   {loading ? "Authenticating..." : "Access Portal"}

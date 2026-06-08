@@ -26,7 +26,8 @@ export const api = createApi({
     "Attendance",
     "ExamType",
     "TeacherSchedule",
-    "Schools"
+    "Schools",
+    "TimeTable"
   ],
 
   endpoints: () => ({}),

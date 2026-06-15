@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Select from 'react-select';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Eye, Paperclip } from 'lucide-react';
 import { useGetClassesQuery } from '../redux/services/classApi';
 import { BASE_URL } from '../redux/services/api';
 import { useGetNoticeQuery, useAddNoticeMutation } from '../redux/services/noticeApi';
@@ -117,21 +117,10 @@ const Notice = () => {
         {filteredNotices.length > 0 ? (
           filteredNotices.map((notice, index) => (
             <div key={index} className="bg-white p-6 rounded-[20px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-md transition-shadow flex flex-col justify-between">
-              <div>
+              <div className="flex-1">
                 <div className="flex justify-between items-start mb-4 gap-4">
                   <div className="flex items-center gap-3">
                     <h3 className="text-xl font-bold text-[#0B132B]">{notice.title}</h3>
-                    {notice.files && notice.files.length > 0 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewAttachment(notice.files);
-                        }}
-                        className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] px-3 py-1 rounded-lg transition-colors whitespace-nowrap"
-                      >
-                        View Attachment
-                      </button>
-                    )}
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${notice.status === 'normal' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                     {notice.status}
@@ -142,24 +131,37 @@ const Notice = () => {
                   {notice.message.split(" ").slice(0, 20).join(" ")}
                   {notice.message.split(" ").length > 20 && "..."}
                 </p>
-              </div>
 
-              <div>
-                <button
-                  onClick={() => setSelectedNotice(notice)}
-                  className="text-blue-600 hover:text-blue-700 font-semibold text-sm mb-4"
-                >
-                  More Info...
-                </button>
-                
                 {notice.classData && notice.classData.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {notice.classData.map((cls, idx) => (
                       <div key={idx} className="inline-block bg-[#eef7ff] text-[#0066b2] text-xs font-semibold px-3 py-1.5 rounded-lg">
                         {cls.className}
                       </div>
                     ))}
                   </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-100 mt-auto">
+                <button
+                  onClick={() => setSelectedNotice(notice)}
+                  className="flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                >
+                  <Eye size={14} />
+                  More Info
+                </button>
+                {notice.files && notice.files.length > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewAttachment(notice.files);
+                    }}
+                    className="flex items-center gap-1.5 bg-emerald-500 text-white hover:bg-emerald-600 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                  >
+                    <Paperclip size={14} />
+                    View Attachment
+                  </button>
                 )}
               </div>
             </div>
@@ -324,13 +326,17 @@ const Notice = () => {
               </div>
 
               {selectedNotice.files && selectedNotice.files.length > 0 && (
-                <div className="mb-8">
-                  <button
-                    onClick={() => handleViewAttachment(selectedNotice.files)}
-                    className="text-[#0A1629] hover:text-[#112443] font-semibold transition-colors bg-gray-50 px-4 py-2 rounded-xl w-fit border border-gray-200"
-                  >
-                    View Attachment
-                  </button>
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Attachments</h4>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => handleViewAttachment(selectedNotice.files)}
+                      className="flex items-center gap-2 bg-emerald-500 text-white hover:bg-emerald-600 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      <Paperclip size={16} />
+                      View Attachment
+                    </button>
+                  </div>
                 </div>
               )}
 

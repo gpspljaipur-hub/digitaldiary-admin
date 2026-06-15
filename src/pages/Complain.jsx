@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Eye, Paperclip } from "lucide-react";
 import Pagination from "../components/Pagination";
 import { useGetComplaintQuery, useAddComplaintCategoryMutation } from "../redux/services/complaintApi";
 import { BASE_URL } from "../redux/services/api";
@@ -112,7 +112,7 @@ const Complain = () => {
                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Status
                 </th>
-                <th className="px-6 py-4 font-semibold tracking-wide flex items-center justify-center">
+                <th className="px-6 py-4 font-semibold tracking-wide text-center">
                   Action
                 </th>
               </tr>
@@ -154,21 +154,23 @@ const Complain = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => setSelectedComplaint(complain)}
+                          className="flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                        >
+                          <Eye size={14} />
+                          More Info
+                        </button>
                         {complain.files && complain.files.length > 0 && (
                           <button
                             onClick={() => handleViewAttachment(complain.files)}
-                            className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] px-3 py-1.5 rounded-lg transition-colors"
+                            className="flex items-center gap-1.5 bg-emerald-500 text-white hover:bg-emerald-600 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
                           >
+                            <Paperclip size={14} />
                             View Attachment
                           </button>
                         )}
-                        <button
-                          onClick={() => setSelectedComplaint(complain)}
-                          className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] px-3 py-1.5 rounded-lg transition-colors"
-                        >
-                          More Info...
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -303,13 +305,17 @@ const Complain = () => {
               </div>
 
               {selectedComplaint.files && selectedComplaint.files.length > 0 && (
-                <div className="mb-8">
-                  <button
-                    onClick={() => handleViewAttachment(selectedComplaint.files)}
-                    className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] hover:bg-blue-100 px-4 py-2 rounded-xl w-fit transition-colors"
-                  >
-                    View Attachment
-                  </button>
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Attachments</h4>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => handleViewAttachment(selectedComplaint.files)}
+                      className="flex items-center gap-2 bg-emerald-500 text-white hover:bg-emerald-600 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      <Paperclip size={16} />
+                      View Attachment
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

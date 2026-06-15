@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Eye, Paperclip } from "lucide-react";
 import Pagination from "../components/Pagination";
 import { useGetNewsQuery, useAddNewsMutation } from "../redux/services/newsApi";
+import { BASE_URL } from "../redux/services/api";
 
-
+const getFileUrl = (filePath) => {
+  if (!filePath) return "";
+  if (filePath.startsWith("http")) return filePath;
+  return `${BASE_URL}/${filePath.replace(/^\/?uploads\/uploads\//, "uploads/").replace(/^\//, "")}`;
+};
 const formatTime12h = (timeStr) => {
   if (!timeStr) return "";
   if (timeStr.includes("AM") || timeStr.includes("PM")) return timeStr;
@@ -118,39 +123,17 @@ const News = () => {
           <table className="min-w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-[#f8f9fc] text-[#6b7280]">
               <tr>
-                <th className="px-6 py-4 font-semibold tracking-wide">Image</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Title</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Type</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Event Date</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Venue</th>
-                <th className="px-6 py-4 font-semibold tracking-wide">Action</th>
+                <th className="px-6 py-4 font-semibold tracking-wide text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
               {currentNews.length > 0 ? (
                 currentNews.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      {item.image ? (
-                        <img
-                          src={
-                            item.image.startsWith("http")
-                              ? item.image
-                              : `https://digitaldiry-backend.onrender.com/${
-                                  item.image
-                                    .replace(/^\/?uploads\/uploads\//, "uploads/")
-                                    .replace(/^\//, "")
-                                }`
-                          }
-                          alt="News"
-                          className="w-10 h-10 rounded-lg object-contain bg-gray-50"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                          No Img
-                        </div>
-                      )}
-                    </td>
                     <td className="px-6 py-4 font-medium text-gray-900">
                       {item.title || "-"}
                     </td>
@@ -164,18 +147,30 @@ const News = () => {
                       {item.venue || "-"}
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => setSelectedNews(item)}
-                        className="text-blue-600 hover:text-blue-800 font-semibold text-sm whitespace-nowrap"
-                      >
-                        More Info..
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => setSelectedNews(item)}
+                          className="flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                        >
+                          <Eye size={14} />
+                          More Info
+                        </button>
+                        {item.image && (
+                          <button
+                            onClick={() => window.open(getFileUrl(item.image), "_blank")}
+                            className="flex items-center gap-1.5 bg-emerald-500 text-white hover:bg-emerald-600 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                          >
+                            <Paperclip size={14} />
+                            View Attachment
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
                     No News Found
                   </td>
                 </tr>
@@ -362,23 +357,7 @@ const News = () => {
             </div>
 
             <div className="p-8 max-h-[70vh] overflow-y-auto">
-              {selectedNews.image && (
-                <div className="mb-6 flex justify-center">
-                  <img
-                    src={
-                      selectedNews.image.startsWith("http")
-                        ? selectedNews.image
-                        : `https://digitaldiry-backend.onrender.com/${
-                            selectedNews.image
-                              .replace(/^\/?uploads\/uploads\//, "uploads/")
-                              .replace(/^\//, "")
-                          }`
-                    }
-                    alt="News"
-                    className="max-w-full max-h-64 object-contain rounded-xl border border-gray-100"
-                  />
-                </div>
-              )}
+
               
               <div className="grid grid-cols-2 gap-6 mb-6">
                 <div>
@@ -411,6 +390,21 @@ const News = () => {
                   {selectedNews.description || "No description provided."}
                 </p>
               </div>
+
+              {selectedNews.image && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Attachments</h4>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => window.open(getFileUrl(selectedNews.image), "_blank")}
+                      className="flex items-center gap-2 bg-emerald-500 text-white hover:bg-emerald-600 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      <Paperclip size={16} />
+                      View Attachment
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-[24px] flex justify-end">

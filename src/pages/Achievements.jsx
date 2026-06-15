@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Eye, Paperclip } from "lucide-react";
 import Select from "react-select";
 import Pagination from "../components/Pagination";
 import { useGetClassesQuery } from "../redux/services/classApi";
 import { useGetStudentQuery } from "../redux/services/studentApi";
 import { useGetAchievementsQuery, useAddAchievementsMutation } from "../redux/services/achievementsApi";
+import { BASE_URL } from "../redux/services/api";
+
+const getFileUrl = (filePath) => {
+  if (!filePath) return "";
+  if (filePath.startsWith("http")) return filePath;
+  return `${BASE_URL}/${filePath.replace(/^\/?uploads\/uploads\//, "uploads/").replace(/^\//, "")}`;
+};
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -206,41 +213,19 @@ payload.append(
           <table className="min-w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-[#f8f9fc] text-[#6b7280]">
               <tr>
-                <th className="px-6 py-4 font-semibold tracking-wide">Image</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Title</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Category</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Date</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Classes</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Students</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Description</th>
-                <th className="px-6 py-4 font-semibold tracking-wide">Action</th>
+                <th className="px-6 py-4 font-semibold tracking-wide text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
               {currentAchievements.length > 0 ? (
                 currentAchievements.map((achievement, index) => (
                   <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      {achievement.image ? (
-                        <img
-                          src={
-                            achievement.image.startsWith("http")
-                              ? achievement.image
-                              : `https://digitaldiry-backend.onrender.com/${
-                                  achievement.image
-                                    .replace(/^\/?uploads\/uploads\//, "uploads/")
-                                    .replace(/^\//, "")
-                                }`
-                          }
-                          alt="Achievement"
-                          className="w-10 h-10 rounded-lg object-contain bg-gray-50"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                          No Img
-                        </div>
-                      )}
-                    </td>
                     <td className="px-6 py-4 font-medium text-gray-900">
                       {achievement.title || "-"}
                     </td>
@@ -263,18 +248,30 @@ payload.append(
                       {achievement.description || "-"}
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => setSelectedAchievement(achievement)}
-                        className="text-blue-600 hover:text-blue-800 font-semibold text-sm whitespace-nowrap"
-                      >
-                        More Info..
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => setSelectedAchievement(achievement)}
+                          className="flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                        >
+                          <Eye size={14} />
+                          More Info
+                        </button>
+                        {achievement.image && (
+                          <button
+                            onClick={() => window.open(getFileUrl(achievement.image), "_blank")}
+                            className="flex items-center gap-1.5 bg-emerald-500 text-white hover:bg-emerald-600 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                          >
+                            <Paperclip size={14} />
+                            View Attachment
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
                     No Achievements Found
                   </td>
                 </tr>
@@ -510,23 +507,7 @@ payload.append(
             </div>
 
             <div className="p-8 max-h-[70vh] overflow-y-auto">
-              {selectedAchievement.image && (
-                <div className="mb-6 flex justify-center">
-                  <img
-                    src={
-                      selectedAchievement.image.startsWith("http")
-                        ? selectedAchievement.image
-                        : `https://digitaldiry-backend.onrender.com/${
-                            selectedAchievement.image
-                              .replace(/^\/?uploads\/uploads\//, "uploads/")
-                              .replace(/^\//, "")
-                          }`
-                    }
-                    alt="Achievement"
-                    className="max-w-full max-h-64 object-contain rounded-xl border border-gray-100"
-                  />
-                </div>
-              )}
+
               
               <div className="mb-6">
                 <h4 className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Date</h4>
@@ -559,7 +540,7 @@ payload.append(
               )}
 
               {selectedAchievement.studentIds && selectedAchievement.studentIds.length > 0 && (
-                <div>
+                <div className="mb-6">
                   <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Students</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedAchievement.studentIds.map((student, idx) => (
@@ -570,6 +551,21 @@ payload.append(
                         {student.name || `${student.firstName || ""} ${student.lastName || ""}`.trim()}
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedAchievement.image && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Attachments</h4>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => window.open(getFileUrl(selectedAchievement.image), "_blank")}
+                      className="flex items-center gap-2 bg-emerald-500 text-white hover:bg-emerald-600 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      <Paperclip size={16} />
+                      View Attachment
+                    </button>
                   </div>
                 </div>
               )}

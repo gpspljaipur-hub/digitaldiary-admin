@@ -27,7 +27,7 @@ const ExamType = () => {
   const schoolId = localStorage.getItem("schoolId");
   const {data: classes = []} = useGetClassesQuery(schoolId);
   const {data: formSubjects = []} = useGetSubjectQuery({schoolId, classId: examForm.classId}, {skip: !examForm.classId});
-  const {data: exam = []} = useGetExamTypeQuery({schoolId, classId: selectedClass}, {skip: !selectedClass});
+  const {data: exam = []} = useGetExamTypeQuery({schoolId, classId: selectedClass});
   const [addExamType] = useAddExamTypeMutation();
   
   const handleExamChange = (e) => {

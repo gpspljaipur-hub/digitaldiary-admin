@@ -1,9 +1,9 @@
-import { api} from "./api";
+import { api } from "./api";
 export const studentApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         getStudent: builder.query({
-            query: ({classId, schoolId}) => ({
+            query: ({ classId, schoolId }) => ({
                 url: "students/list-by-class",
                 method: "POST",
                 body: {
@@ -14,22 +14,22 @@ export const studentApi = api.injectEndpoints({
             providesTags: ["Students"],
         }),
 
-         addStudent: builder.mutation({
+        addStudent: builder.mutation({
 
-                    query: (body) => ({
+            query: (body) => ({
 
-                    url: "/students/add",
+                url: "/students/add",
 
-                    method: "POST",
+                method: "POST",
 
-                    body,
+                body,
 
-                    }),
-
-                    invalidatesTags: ["Students"],
-                }),
             }),
-        });
+
+            invalidatesTags: ["Students"],
+        }),
+    }),
+});
 
 export const {
     useGetStudentQuery,

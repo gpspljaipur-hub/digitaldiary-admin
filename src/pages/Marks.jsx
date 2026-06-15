@@ -2,20 +2,23 @@ import React, { useState } from "react";
 import Pagination from "../components/Pagination";
 import { useGetMarksQuery } from "../redux/services/marksApi";
 import { useGetClassesQuery } from "../redux/services/classApi";
-import { useGetSubjectQuery } from "../redux/services/subjectApi";
+import { useGetStudentQuery } from "../redux/services/studentApi";
+import { useGetExamTypeQuery } from "../redux/services/examTypeApi";
 
 const Marks = () => {
+  const [selectedExamType, setSelectedExamType] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
-  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+  const [selectedStudentId, setSelectedStudentId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const schoolId = localStorage.getItem("schoolId");
   const {data : availableClasses = []} = useGetClassesQuery(schoolId);
-  const {data : response = []} = useGetMarksQuery({schoolId, classId: selectedClassId, subjectId: selectedSubjectId}, {skip: !selectedClassId || !selectedSubjectId});
+  const {data : response = []} = useGetMarksQuery({schoolId, classId: selectedClassId, studentId: selectedStudentId, examType: selectedExamType}, {skip: !selectedClassId || !selectedExamType});
   const marksList = response?.data || [];
-  const {data: subjects = []} = useGetSubjectQuery({classId: selectedClassId, schoolId}, {skip: !selectedClassId});
-
+  const {data: students = []} = useGetStudentQuery({schoolId, classId: selectedClassId}, {skip: !selectedClassId});
+  const {data: examType = []} = useGetExamTypeQuery({schoolId});
+  const uniqueExamTypes = [...new Set(examType.map(item => item.examType || item.name))].filter(Boolean);
 
   const totalPages = Math.max(1, Math.ceil(marksList.length / itemsPerPage));
   const currentMarks = marksList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -26,18 +29,37 @@ const Marks = () => {
             <div>
               <h2 className="text-3xl font-bold text-[#0B132B] mb-2">Marks List</h2>
               <p className="text-gray-500 text-sm">
-                View student marks by class
+                View students to marks by the class
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               <select
-                value={selectedClassId}
+                value={selectedExamType}
                 onChange={(e) => {
-                  setSelectedClassId(e.target.value);
-                  setSelectedSubjectId("");
+                  setSelectedExamType(e.target.value);
+                  setSelectedClassId("");
+                  setSelectedStudentId("");
                   setCurrentPage(1);
                 }}
                 className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
+              >
+                <option value="" disabled>Select Exam Type</option>
+                {uniqueExamTypes.map((type, index) => (
+                  <option key={index} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedClassId}
+                onChange={(e) => {
+                  setSelectedClassId(e.target.value);
+                  setSelectedStudentId("");
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
+                disabled={!selectedExamType}
               >
                 <option value="" disabled>Select Class</option>
                 {availableClasses.map((cls, index) => (
@@ -48,18 +70,18 @@ const Marks = () => {
               </select>
 
               <select
-                value={selectedSubjectId}
+                value={selectedStudentId}
                 onChange={(e) => {
-                  setSelectedSubjectId(e.target.value);
+                  setSelectedStudentId(e.target.value);
                   setCurrentPage(1);
                 }}
                 className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
                 disabled={!selectedClassId}
               >
-                <option value="">All Subjects</option>
-                {subjects.map((sub, index) => (
-                  <option key={index} value={sub._id || sub.id}>
-                    {sub.name || sub.subjectName}
+                <option value="">All Students</option>
+                {students.map((stu, index) => (
+                  <option key={index} value={stu._id || stu.id}>
+                    {stu.name || sub.studentName}
                   </option>
                 ))}
               </select>

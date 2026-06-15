@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
-import Login from './pages/Login'
+import Login from './pages/login'
 import Role from './pages/Role'
 import SchoolName from './pages/SchoolName'
 import Registration from './pages/Registration'
@@ -26,6 +26,11 @@ import Attendance from './pages/Attendance'
 import ExamType from './pages/ExamType'
 import Admin from './pages/Admin'
 import TimeTable from './pages/TimeTable'
+import FeesStructure from './pages/FeesStructure'
+import Achievements from './pages/Achievements'
+import News from './pages/News'
+import Gallery from './pages/Gallery'
+import Banner from './pages/Banner'
 
 
 const App = () => {
@@ -59,6 +64,11 @@ const App = () => {
           <Route path="/school-registration" element={<SchoolRegistration />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/time-table" element={<TimeTable/>}/>
+          <Route path="/fees-structure" element={<FeesStructure/>}/>
+          <Route path="/achievements" element={<Achievements/>}/>
+          <Route path="/news" element={<News/>}/>
+          <Route path="/gallery" element={<Gallery/>}/>
+          <Route path="/banner" element={<Banner/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,8 +1,18 @@
-import React, { useState} from 'react';
+import React, { useState, useMemo } from 'react';
 import Select from 'react-select';
 import { Plus, X } from 'lucide-react';
 import { useGetClassesQuery } from '../redux/services/classApi';
+import { BASE_URL } from '../redux/services/api';
 import { useGetNoticeQuery, useAddNoticeMutation } from '../redux/services/noticeApi';
+
+const handleViewAttachment = (files) => {
+  if (!files || files.length === 0) return;
+  const filePath = files[0].file || files[0];
+  const url = filePath.startsWith("http")
+    ? filePath
+    : `${BASE_URL}/${filePath.replace(/^\/?uploads\/uploads\//, "uploads/").replace(/^\//, "")}`;
+  window.open(url, "_blank");
+};
 
 const Notice = () => {
   const [selectedClassId, setSelectedClassId] = useState("");
@@ -14,21 +24,24 @@ const Notice = () => {
     classId: [],
     status: ""
   });
+  const [noticeFile, setNoticeFile] = useState(null);
 
   const schoolId = localStorage.getItem("schoolId");
 
   const {data: classes = []} = useGetClassesQuery(schoolId);
-  const {data: response} = useGetNoticeQuery(schoolId);
+  const {data: response} = useGetNoticeQuery(schoolId, {skip: !schoolId});
   const notices = response?.data || [];
   const [addNotice] = useAddNoticeMutation();
 
-  const filteredNotices = selectedClassId
-  ? notices.filter((notice) =>
-      notice.classData?.some(
-        (cls) => cls.classId === selectedClassId
-      )
-    )
-  : notices;
+  const filteredNotices = useMemo(() => {
+    return selectedClassId
+      ? notices.filter((notice) =>
+          notice.classData?.some(
+            (cls) => cls.classId === selectedClassId
+          )
+        )
+      : notices;
+  }, [notices, selectedClassId]);
 
 
   const handleChange = (e) => {
@@ -41,9 +54,24 @@ const Notice = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Submitting notice:", noticeForm);
-      await addNotice({...noticeForm, schoolId});
+      const payload = new FormData();
+      payload.append("schoolId", schoolId);
+      payload.append("title", noticeForm.title);
+      payload.append("message", noticeForm.message);
+      payload.append("status", noticeForm.status);
+      
+      noticeForm.classId.forEach(id => {
+        payload.append("classId", id);
+      });
+      
+      if (noticeFile) {
+        payload.append("files", noticeFile);
+      }
+
+      await addNotice(payload).unwrap();
+      alert("Notice added successfully!");
       setNoticeForm({ title: "", message: "", classId: [], status: "" });
+      setNoticeFile(null);
       setShowNoticeForm(false);
     } catch (error) {
       console.log("Error adding notice:", error);
@@ -68,7 +96,7 @@ const Notice = () => {
             onChange={(e) => setSelectedClassId(e.target.value)}
             className="border border-gray-200 p-3 rounded-xl focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all min-w-[200px]"
           >
-            <option value="" disabled>Select a Class to view notice</option>
+            <option value="">All Classes</option>
             {classes.map((cls, index) => (
               <option key={index} value={cls._id || cls.id}>
                 {cls.className || cls.name}
@@ -91,7 +119,20 @@ const Notice = () => {
             <div key={index} className="bg-white p-6 rounded-[20px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-md transition-shadow flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4 gap-4">
-                  <h3 className="text-xl font-bold text-[#0B132B]">{notice.title}</h3>
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-bold text-[#0B132B]">{notice.title}</h3>
+                    {notice.files && notice.files.length > 0 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewAttachment(notice.files);
+                        }}
+                        className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] px-3 py-1 rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        View Attachment
+                      </button>
+                    )}
+                  </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${notice.status === 'normal' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                     {notice.status}
                   </span>
@@ -218,6 +259,15 @@ const Notice = () => {
                     <option value="important">Important</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Attachment (Optional)</label>
+                  <input
+                    type="file"
+                    onChange={(e) => setNoticeFile(e.target.files[0])}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#0A1629] focus:ring-1 focus:ring-[#0A1629] outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#0A1629] file:text-white hover:file:bg-[#112443]"
+                  />
+                </div>
               </div>
 
               <div className="pt-5 border-t border-gray-100 flex items-center justify-end gap-3 mt-2">
@@ -272,6 +322,17 @@ const Notice = () => {
                   {selectedNotice.message}
                 </p>
               </div>
+
+              {selectedNotice.files && selectedNotice.files.length > 0 && (
+                <div className="mb-8">
+                  <button
+                    onClick={() => handleViewAttachment(selectedNotice.files)}
+                    className="text-[#0A1629] hover:text-[#112443] font-semibold transition-colors bg-gray-50 px-4 py-2 rounded-xl w-fit border border-gray-200"
+                  >
+                    View Attachment
+                  </button>
+                </div>
+              )}
 
               {selectedNotice.classData && selectedNotice.classData.length > 0 && (
                 <div>

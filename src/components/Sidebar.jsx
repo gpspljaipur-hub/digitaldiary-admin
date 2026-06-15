@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Building2, UserCog, Users, Library, 
   BookOpen, Bell, AlertCircle, CalendarOff, GraduationCap, 
   BookText, Award, UserCheck, CalendarClock, FileEdit, 
-  Calendar, Menu
+  Calendar, Menu, Receipt, AwardIcon, Newspaper, Images,
+  Flag
 } from "lucide-react";
 const Sidebar = ({ isOpen = true }) => {
 
@@ -35,6 +36,11 @@ const Sidebar = ({ isOpen = true }) => {
     { id: "attendance", label: "Attendance", icon: UserCheck },
     { id: "teacher-schedule", label: "Teacher Schedule", icon: CalendarClock },
     { id: "exam-type", label: "Exam Schedule", icon: FileEdit },
+    { id: "fees-structure", label: "Fees Structure", icon: Receipt},
+    { id: "achievements", label: "Achievements", icon: AwardIcon},
+    { id: "news", label: "News", icon: Newspaper },
+    { id: "gallery", label: "Gallery", icon: Images},
+    { id: "banner", label: "Banner", icon: Flag}
   ];
 
   const menuItems =

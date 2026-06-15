@@ -3,13 +3,14 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 
+export const BASE_URL = "https://digitaldiry-backend.onrender.com";
+
 export const api = createApi({
 
   reducerPath: "api",
 
   baseQuery: fetchBaseQuery({
-    baseUrl:
-      "https://digitaldiry-backend.onrender.com",
+    baseUrl: BASE_URL,
   }),
 
   tagTypes: [
@@ -27,7 +28,12 @@ export const api = createApi({
     "ExamType",
     "TeacherSchedule",
     "Schools",
-    "TimeTable"
+    "TimeTable",
+    "Fees",
+    "Achievements",
+    "News",
+    "Banners",
+    "Gallery"
   ],
 
   endpoints: () => ({}),

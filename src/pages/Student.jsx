@@ -23,7 +23,7 @@ const Student = () => {
     const {data: classes = []} = useGetClassesQuery(schoolId);
     const {data: students = []} = useGetStudentQuery({schoolId, classId: selectedClass}, {skip: !selectedClass});
     const [addStudent] = useAddStudentMutation();
-    const {data: response = []} = useGetTeacherQuery(schoolId, {skip: !showStudentForm});
+    const {data: response = []} = useGetTeacherQuery(schoolId);
     const teachers = response?.data || [];
    
 

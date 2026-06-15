@@ -2,6 +2,16 @@ import React, { useState} from "react";
 import { Plus, X } from "lucide-react";
 import Pagination from "../components/Pagination";
 import { useGetComplaintQuery, useAddComplaintCategoryMutation } from "../redux/services/complaintApi";
+import { BASE_URL } from "../redux/services/api";
+
+const handleViewAttachment = (files) => {
+  if (!files || files.length === 0) return;
+  const file = files[0].file || files[0];
+  const url = file.startsWith("http")
+    ? file
+    : `${BASE_URL}/${file.replace(/^\/?uploads\/uploads\//, "uploads/").replace(/^\//, "")}`;
+  window.open(url, "_blank");
+};
 
 const Complain = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,12 +112,15 @@ const Complain = () => {
                 <th className="px-6 py-4 font-semibold tracking-wide">
                   Status
                 </th>
+                <th className="px-6 py-4 font-semibold tracking-wide flex items-center justify-center">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[#374151]">
               {isLoading ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-10 text-center text-gray-500">
                     Loading...
                   </td>
                 </tr>
@@ -118,13 +131,13 @@ const Complain = () => {
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-4 font-medium">
-                      {complain.studentName || "N/A"}
+                      {complain.studentId?.name || "N/A"}
                     </td>
                     <td className="px-6 py-4 font-medium">
-                      {complain.className || "N/A"}
+                      {complain.classId?.name || "N/A"}
                     </td>
                     <td className="px-6 py-4 text-gray-600">
-                      {complain.categoryName || "N/A"}
+                      {complain.categoryId?.name || "N/A"}
                     </td>
                     <td className="px-6 py-4 text-gray-600 max-w-xs">
                       <p className="truncate">
@@ -134,26 +147,35 @@ const Complain = () => {
 
                         {complain.message?.split(" ").length > 5 && "..."}
                       </p>
-                            
-                      {complain.message?.split(" ").length > 5 && (
-                        <button
-                          onClick={() => setSelectedComplaint(complain)}
-                          className="text-blue-600 hover:text-blue-700 text-sm font-semibold mt-2"
-                        >
-                          More Info...
-                        </button>
-                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusColor(complain.status)}`}>
                         {complain.status || "N/A"}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        {complain.files && complain.files.length > 0 && (
+                          <button
+                            onClick={() => handleViewAttachment(complain.files)}
+                            className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] px-3 py-1.5 rounded-lg transition-colors"
+                          >
+                            View Attachment
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setSelectedComplaint(complain)}
+                          className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          More Info...
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-10 text-center text-gray-500">
                     No Complaints Found
                   </td>
                 </tr>
@@ -242,21 +264,29 @@ const Complain = () => {
             </div>
 
             <div className="p-8 max-h-[70vh] overflow-y-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 bg-[#f8f9fc] p-5 rounded-2xl border border-gray-100">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 bg-[#f8f9fc] p-5 rounded-2xl border border-gray-100">
                 <div>
                   <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">
                     Student Name
                   </p>
                   <p className="text-lg font-bold text-[#0B132B]">
-                    {selectedComplaint.studentName || "N/A"}
+                    {selectedComplaint.studentId?.name || "N/A"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">
-                    Complaint Category
+                    Class
                   </p>
                   <p className="text-lg font-bold text-[#0B132B]">
-                    {selectedComplaint.categoryName || "N/A"}
+                    {selectedComplaint.classId?.name || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">
+                    Category
+                  </p>
+                  <p className="text-lg font-bold text-[#0B132B]">
+                    {selectedComplaint.categoryId?.name || "N/A"}
                   </p>
                 </div>
               </div>
@@ -273,27 +303,13 @@ const Complain = () => {
               </div>
 
               {selectedComplaint.files && selectedComplaint.files.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">
-                    Attached Files
-                  </h4>
-                  <div className="flex flex-wrap gap-4">
-                    {selectedComplaint.files.map((file, index) => (
-                        <a
-                          key={index}
-                          href={`https://digitaldiry-backend.onrender.com/${file}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block overflow-hidden rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all hover:scale-105"
-                        >
-                          <img
-                            src={`https://digitaldiry-backend.onrender.com/${file}`}
-                            alt="Attached file"
-                            className="w-32 h-32 object-cover"
-                          />
-                        </a>
-                    ))}
-                  </div>
+                <div className="mb-8">
+                  <button
+                    onClick={() => handleViewAttachment(selectedComplaint.files)}
+                    className="text-sm font-semibold text-[#0066b2] hover:text-blue-800 bg-[#eef7ff] hover:bg-blue-100 px-4 py-2 rounded-xl w-fit transition-colors"
+                  >
+                    View Attachment
+                  </button>
                 </div>
               )}
             </div>

@@ -2,9 +2,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Building2, UserCog, Users, Library, 
   BookOpen, Bell, AlertCircle, CalendarOff, GraduationCap, 
-  BookText, Award, UserCheck, CalendarClock, FileEdit 
+  BookText, Award, UserCheck, CalendarClock, FileEdit, 
+  Calendar, Menu, Receipt, AwardIcon, Newspaper, Images,
+  Flag
 } from "lucide-react";
-const Sidebar = () => {
+const Sidebar = ({ isOpen = true }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,9 +23,10 @@ const Sidebar = () => {
 
   const schoolAdminMenu = [
     { id: "home", label: "Dashboard", icon: LayoutDashboard },
-    { id: "teacher", label: "Teacher", icon: Users },
     { id: "class", label: "Classes", icon: Library },
     { id: "subject", label: "Subject", icon: BookOpen },
+    { id: "teacher", label: "Teacher", icon: Users },
+    { id: "time-table", label: "Time Table", icon: Calendar},
     { id: "notice", label: "Notices", icon: Bell },
     { id: "complaint", label: "Complaint", icon: AlertCircle },
     { id: "leave", label: "Leave", icon: CalendarOff },
@@ -32,7 +35,12 @@ const Sidebar = () => {
     { id: "marks", label: "Marks", icon: Award },
     { id: "attendance", label: "Attendance", icon: UserCheck },
     { id: "teacher-schedule", label: "Teacher Schedule", icon: CalendarClock },
-    { id: "exam-type", label: "Exam Type", icon: FileEdit },
+    { id: "exam-type", label: "Exam Schedule", icon: FileEdit },
+    { id: "fees-structure", label: "Fees Structure", icon: Receipt},
+    { id: "achievements", label: "Achievements", icon: AwardIcon},
+    { id: "news", label: "News", icon: Newspaper },
+    { id: "gallery", label: "Gallery", icon: Images},
+    { id: "banner", label: "Banner", icon: Flag}
   ];
 
   const menuItems =
@@ -41,7 +49,8 @@ const Sidebar = () => {
       : schoolAdminMenu;
 
   return (
-    <div className="w-72 h-screen sticky top-0 flex-shrink-0 bg-[#0b1c30] text-white flex flex-col overflow-auto">
+    <div className={`h-screen sticky top-0 flex-shrink-0 bg-[#0b1c30] text-white transition-all duration-300 ${isOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
+      <div className="w-72 h-full flex flex-col overflow-y-auto overflow-x-hidden">
 
       <div className="p-6 flex items-center gap-4">
 
@@ -93,6 +102,7 @@ const Sidebar = () => {
 
       </div>
 
+      </div>
     </div>
   );
 };

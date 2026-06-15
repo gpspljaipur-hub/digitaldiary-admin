@@ -1,32 +1,32 @@
 import { api } from "./api";
-export const examTypeApi =
+export const feesApi =
   api.injectEndpoints({
     endpoints: (builder) => ({
-      getExamType: builder.query({
+      getFees: builder.query({
         query: ({ schoolId, classId }) => ({
-          url: "examType/schedule/list",
+          url: "fees-structure/list",
           method: "POST",
           body: {
             schoolId,
             classId
           }
         }),
-        providesTags: ["ExamType"],
+        providesTags: ["Fees"],
       }),
 
 
-      addExamType: builder.mutation({
+      addFees: builder.mutation({
         query: (body) => ({
-          url: "/examType/schedule/add",
+          url: "fees-structure/add",
           method: "POST",
           body,
         }),
-        invalidatesTags: ["ExamType"],
+        invalidatesTags: ["Fees"],
       }),
     }),
   });
 
 export const {
-  useGetExamTypeQuery,
-  useAddExamTypeMutation,
-} = examTypeApi;
+  useGetFeesQuery,
+  useAddFeesMutation,
+} = feesApi;

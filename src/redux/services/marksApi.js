@@ -15,8 +15,22 @@ export const marksApi = api.injectEndpoints({
             }),
             providesTags: ["Marks"],
         }),
+        getReportCard: builder.query({
+            query: ({schoolId, classId, studentId, examType}) => ({
+                url: "marks/report-card",
+                method: "POST",
+                body: {
+                    schoolId,
+                    classId,
+                    studentId,
+                    examType
+                },
+            }),
         }),
-        });
+    }),
+});
 export const {
     useGetMarksQuery,
+    useGetReportCardQuery,
+    useLazyGetReportCardQuery,
 } = marksApi;

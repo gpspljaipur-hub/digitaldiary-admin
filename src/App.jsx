@@ -10,7 +10,7 @@ import Profile from './pages/Profile'
 import TeacherSchedule from './pages/TeacherSchedule'
 import Student from './pages/Student'
 import SchoolManagement from './pages/SchoolManagement'
-import SchoolRegistration from './pages/SchoolRegistration'
+
 import DashboardHome from './pages/DashboardHome'
 
 
@@ -61,7 +61,7 @@ const App = () => {
           <Route path="/student" element={<Student />} />
           <Route path="/home" element={<DashboardHome />} />
           <Route path='/school-management' element={<SchoolManagement />} />
-          <Route path="/school-registration" element={<SchoolRegistration />} />
+
           <Route path="/admin" element={<Admin />} />
           <Route path="/time-table" element={<TimeTable/>}/>
           <Route path="/fees-structure" element={<FeesStructure/>}/>

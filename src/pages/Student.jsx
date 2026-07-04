@@ -134,13 +134,13 @@ const Student = () => {
                     <td className="px-6 py-4 font-medium">
                       {item.name || "—"}
                     </td>
-                    <td className="px-6 py-4 font-medium">
-                      {classes.find((c) => c._id === item.classId)?.name || "—"}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {teachers.find((t) => t._id === item.teacherId)?.name ||
-                        "—"}
-                    </td>
+                                  <td className="px-6 py-4 font-medium">
+                  {item.classId?.name || "—"}
+                </td>
+
+                <td className="px-6 py-4 text-gray-600">
+                  {item.teacherId?.name || "—"}
+                 </td>
                   </tr>
                 ))
               ) : (

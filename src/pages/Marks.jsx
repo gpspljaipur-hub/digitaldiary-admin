@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Pagination from "../components/Pagination";
-import { useGetMarksQuery } from "../redux/services/marksApi";
+import { useGetMarksQuery, useLazyGetReportCardQuery } from "../redux/services/marksApi";
 import { useGetClassesQuery } from "../redux/services/classApi";
 import { useGetStudentQuery } from "../redux/services/studentApi";
 import { useGetExamTypeQuery } from "../redux/services/examTypeApi";
+import { BASE_URL } from "../redux/services/api";
+import { FileText } from "lucide-react";
 
 const Marks = () => {
   const [selectedExamType, setSelectedExamType] = useState("");
@@ -19,6 +21,31 @@ const Marks = () => {
   const {data: students = []} = useGetStudentQuery({schoolId, classId: selectedClassId}, {skip: !selectedClassId});
   const {data: examType = []} = useGetExamTypeQuery({schoolId});
   const uniqueExamTypes = [...new Set(examType.map(item => item.examType || item.name))].filter(Boolean);
+
+  const [triggerGetReportCard] = useLazyGetReportCardQuery();
+
+  const handleViewReportCard = async (mark) => {
+    try {
+      const response = await triggerGetReportCard({
+        schoolId,
+        classId: mark.classId?._id || mark.classId,
+        studentId: mark.studentId?._id || mark.studentId,
+        examType: mark.examType
+      }).unwrap();
+
+      if (response?.success && response?.link) {
+        const url = response.link.startsWith("http")
+          ? response.link
+          : `${BASE_URL}/${response.link.replace(/^\/?uploads\/uploads\//, "uploads/").replace(/^\//, "")}`;
+        window.open(url, "_blank");
+      } else {
+        alert("Report card not available.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch report card:", error);
+      alert("Failed to fetch report card. Please try again later.");
+    }
+  };
 
   const totalPages = Math.max(1, Math.ceil(marksList.length / itemsPerPage));
   const currentMarks = marksList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -113,6 +140,9 @@ const Marks = () => {
                             <th className="px-6 py-4 font-semibold tracking-wide">
                                 Marks Obtained
                             </th>
+                            <th className="px-6 py-4 font-semibold tracking-wide text-center">
+                                Action
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-[#374151]">
@@ -123,25 +153,36 @@ const Marks = () => {
                                 {(currentPage - 1) * itemsPerPage + index + 1}
                               </td>
                               <td className="px-6 py-4 font-medium">
-                                {mark.studentName || "N/A"}
+                                {mark.studentId?.name || "N/A"}
                               </td>
                               <td className="px-6 py-4 font-medium">
-                                {mark.className || "N/A"}
+                                {mark.classId?.name || "N/A"}
                               </td>
                               <td className="px-6 py-4 font-medium">
-                                {mark.subjectName || "N/A"}
+                                {mark.subjectId?.name || "N/A"}
                               </td>
                               <td className="px-6 py-4 text-gray-600">
-                                {mark.examTypeName || "N/A"}
+                                {mark.examType || "N/A"}
                               </td>
                               <td className="px-6 py-4 font-bold text-[#0A1629]">
-                                {mark.marks}
+                                {mark.marks !== undefined ? `${mark.marks} / ${mark.totalMarks || '-'}` : "N/A"}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center justify-center">
+                                  <button
+                                    onClick={() => handleViewReportCard(mark)}
+                                    className="flex items-center gap-1.5 bg-emerald-500 text-white hover:bg-emerald-600 px-3 py-2 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap shadow-sm"
+                                  >
+                                    <FileText size={14} />
+                                    Report Card
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))
                         ) : (
                           <tr>
-                              <td className="px-6 py-10 text-center text-gray-500" colSpan="6">
+                              <td className="px-6 py-10 text-center text-gray-500" colSpan="7">
                                   No Marks Found
                               </td>
                           </tr>

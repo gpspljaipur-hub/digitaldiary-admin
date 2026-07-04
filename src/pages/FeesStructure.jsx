@@ -123,7 +123,7 @@ const FeesStructure = () => {
                 <th className="px-6 py-4 font-semibold tracking-wide">Fee Type</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Amount</th>
                 <th className="px-6 py-4 font-semibold tracking-wide">Frequency</th>
-                <th className="px-6 py-4 font-semibold tracking-wide">Due Date</th>
+                {/* <th className="px-6 py-4 font-semibold tracking-wide">Due Date</th> */}
                 <th className="px-6 py-4 font-semibold tracking-wide">Description</th>
               </tr>
             </thead>
@@ -137,7 +137,7 @@ const FeesStructure = () => {
                     <td className="px-6 py-4 text-gray-600">{fee.feeType || "-"}</td>
                     <td className="px-6 py-4 text-gray-600">₹{fee.amount || "-"}</td>
                     <td className="px-6 py-4 text-gray-600 capitalize">{fee.frequency || "-"}</td>
-                    <td className="px-6 py-4 text-gray-600">{fee.dueDay || "-"}</td>
+                    {/* <td className="px-6 py-4 text-gray-600">{fee.dueDay || "-"}</td> */}
                     <td className="px-6 py-4 text-gray-600 max-w-[200px] truncate" title={fee.description}>
                       {fee.description || "-"}
                     </td>
